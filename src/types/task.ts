@@ -25,8 +25,17 @@ export interface GitHubIssueCreationResult {
     error?: string;
 }
 
+export interface GitHubProject {
+    id: number;
+    number: number;
+    title: string;
+    url: string;
+}
+
 export interface GitHubCredentials {
     token: string;
     owner: string;
     repo: string;
+    projectId?: number;
+    projectNumber?: number;
 } 

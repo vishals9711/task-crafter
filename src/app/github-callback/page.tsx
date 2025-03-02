@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { encryptToken } from '@/lib/tokenEncryption';
 
 export default function GitHubCallback() {
   const router = useRouter();
@@ -40,8 +41,9 @@ export default function GitHubCallback() {
           throw new Error('No access token received');
         }
         
-        // Store the token in localStorage
-        localStorage.setItem('github_token', data.access_token);
+        // Encrypt the token before storing it
+        const encryptedToken = await encryptToken(data.access_token);
+        localStorage.setItem('github_token', encryptedToken);
         
         // Redirect back to the original page with success parameter
         let redirectUrl = localStorage.getItem('github_redirect') || '/task-extractor';

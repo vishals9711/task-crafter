@@ -12,7 +12,7 @@ export async function GET() {
 
     // Redirect to GitHub OAuth
     const redirectUri = `${process.env.NEXT_PUBLIC_APP_URL}/api/github/callback`;
-    const scope = 'repo';
+    const scope = 'repo read:project';
 
     const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${scope}`;
 
