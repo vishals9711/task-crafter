@@ -8,14 +8,16 @@ export default function ParticleBackground() {
         {Array.from({ length: 20 }).map((_, i) => (
           <div
             key={i}
-            className="absolute rounded-full bg-gradient-to-br from-purple-500/10 to-blue-500/10 animate-float"
+            className="absolute rounded-full bg-gradient-to-br from-purple-500/10 to-blue-500/10 animate-float blur-sm transition-all duration-1000"
             style={{
               width: `${Math.random() * 200 + 50}px`,
               height: `${Math.random() * 200 + 50}px`,
               left: `${Math.random() * 100}%`,
               top: `${Math.random() * 100}%`,
               animationDelay: `${Math.random() * 5}s`,
-              animationDuration: `${Math.random() * 10 + 10}s`,
+              animationDuration: `${Math.random() * 15 + 20}s`,
+              transform: `rotate(${Math.random() * 360}deg)`,
+              opacity: 0.5 + Math.random() * 0.5,
             }}
           />
         ))}

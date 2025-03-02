@@ -1,7 +1,8 @@
 import type { Config } from "tailwindcss";
+import tailwindAnimate from "tailwindcss-animate";
 
 const config: Config = {
-    darkMode: ["class"],
+    darkMode: "class",
     content: [
         "./pages/**/*.{ts,tsx}",
         "./components/**/*.{ts,tsx}",
@@ -19,14 +20,30 @@ const config: Config = {
         extend: {
             keyframes: {
                 float: {
-                    "0%, 100%": { transform: "translateY(0) translateX(0)" },
-                    "25%": { transform: "translateY(-10px) translateX(10px)" },
-                    "50%": { transform: "translateY(10px) translateX(-10px)" },
-                    "75%": { transform: "translateY(-5px) translateX(5px)" },
+                    "0%": {
+                        transform: "translateY(0) translateX(0) rotate(0deg) scale(1)",
+                        opacity: "0.5"
+                    },
+                    "25%": {
+                        transform: "translateY(-15px) translateX(15px) rotate(5deg) scale(1.05)",
+                        opacity: "0.8"
+                    },
+                    "50%": {
+                        transform: "translateY(10px) translateX(-10px) rotate(-5deg) scale(0.95)",
+                        opacity: "0.6"
+                    },
+                    "75%": {
+                        transform: "translateY(-8px) translateX(8px) rotate(3deg) scale(1.02)",
+                        opacity: "0.7"
+                    },
+                    "100%": {
+                        transform: "translateY(0) translateX(0) rotate(0deg) scale(1)",
+                        opacity: "0.5"
+                    }
                 },
             },
             animation: {
-                float: "float 20s ease-in-out infinite",
+                float: "float 20s cubic-bezier(0.4, 0, 0.2, 1) infinite",
             },
             colors: {
                 border: "hsl(var(--border))",
@@ -70,7 +87,7 @@ const config: Config = {
             },
         },
     },
-    plugins: [require("tailwindcss-animate")],
+    plugins: [tailwindAnimate],
 };
 
 export default config; 
