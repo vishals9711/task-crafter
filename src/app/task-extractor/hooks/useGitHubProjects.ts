@@ -1,32 +1,32 @@
-import { useState, useEffect } from 'react';
-import { decryptToken } from '@/lib/tokenEncryption';
+import { useState, useEffect, useCallback } from 'react';
+import { useSession } from 'next-auth/react';
+import { Session } from 'next-auth';
 import { GitHubProject } from '@/types/task';
 
+// Extend the Session type to include accessToken
+interface ExtendedSession extends Session {
+    accessToken?: string;
+}
+
 export const useGitHubProjects = (isGitHubLoggedIn: boolean) => {
+    const { data: session } = useSession();
+    const accessToken = (session as ExtendedSession)?.accessToken;
     const [userProjects, setUserProjects] = useState<GitHubProject[]>([]);
     const [selectedProject, setSelectedProject] = useState<GitHubProject | null>(null);
     const [projectSelectorOpen, setProjectSelectorOpen] = useState(false);
     const isProjectsEnabled = process.env.NEXT_PUBLIC_ENABLE_PROJECTS === 'true';
 
-    useEffect(() => {
-        if (isGitHubLoggedIn && isProjectsEnabled) {
-            fetchUserProjects();
-        }
-    }, [isGitHubLoggedIn, isProjectsEnabled]);
-
-    const fetchUserProjects = async () => {
+    const fetchUserProjects = useCallback(async () => {
         try {
-            const encryptedToken = localStorage.getItem('github_token');
-            if (!encryptedToken) {
+            if (!accessToken) {
                 console.error('No GitHub token found');
                 return;
             }
 
-            const token = await decryptToken(encryptedToken);
             const response = await fetch('https://api.github.com/graphql', {
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
+                    'Authorization': `Bearer ${accessToken}`,
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
@@ -78,7 +78,13 @@ export const useGitHubProjects = (isGitHubLoggedIn: boolean) => {
         } catch (error) {
             console.error('Error fetching projects:', error);
         }
-    };
+    }, [accessToken]);
+
+    useEffect(() => {
+        if (isGitHubLoggedIn && isProjectsEnabled && accessToken) {
+            fetchUserProjects();
+        }
+    }, [isGitHubLoggedIn, isProjectsEnabled, accessToken, fetchUserProjects]);
 
     const handleProjectSelect = (projectId: string) => {
         const project = userProjects.find(p => p.id.toString() === projectId);

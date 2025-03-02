@@ -31,7 +31,6 @@ interface GitHubIntegrationProps {
   setOpen: (open: boolean) => void;
   handleRepoSelect: (value: string) => void;
   handleGitHubLogin: () => void;
-  handleGitHubLogout: () => void;
   isProjectsEnabled: boolean;
   userProjects: GitHubProject[];
   selectedProject: GitHubProject | null;
@@ -48,7 +47,6 @@ export function GitHubIntegration({
   setOpen,
   handleRepoSelect,
   handleGitHubLogin,
-  handleGitHubLogout,
   isProjectsEnabled,
   userProjects,
   selectedProject,
@@ -159,14 +157,6 @@ export function GitHubIntegration({
               </Popover>
             )}
           </div>
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            onClick={handleGitHubLogout}
-            className="hover:bg-white/5"
-          >
-            Logout
-          </Button>
         </div>
       </div>
     );
@@ -175,7 +165,7 @@ export function GitHubIntegration({
   return (
     <Button 
       onClick={handleGitHubLogin}
-      className="flex items-center gap-2 bg-[#2da44e] hover:bg-[#2c974b] px-6 py-5 text-base"
+      className="flex items-center gap-2 bg-[#2da44e] hover:bg-[#2c974b] px-6 py-5 text-base cursor-pointer h-12 min-h-[48px]"
       title="Sign in to save your preferences and access additional features (optional)"
     >
       <GithubIcon size={20} />

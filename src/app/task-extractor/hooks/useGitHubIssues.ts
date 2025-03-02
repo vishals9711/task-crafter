@@ -1,10 +1,18 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { toast } from 'sonner';
 import { ExtractedTasks, GitHubCredentials, GitHubIssueCreationResult } from '@/types/task';
-import { decryptToken } from '@/lib/tokenEncryption';
+import { useSession } from 'next-auth/react';
+import { Session } from 'next-auth';
 import { mockGitHubIssueCreationResponses } from '@/lib/__mocks__/test-data';
 
+// Extend the Session type to include accessToken
+interface ExtendedSession extends Session {
+    accessToken?: string;
+}
+
 export const useGitHubIssues = (setCreationResult: (result: GitHubIssueCreationResult | null) => void) => {
+    const { data: session } = useSession();
+    const extendedSession = session as ExtendedSession;
     const [isCreatingIssues, setIsCreatingIssues] = useState(false);
     const [showGitHubDialog, setShowGitHubDialog] = useState(false);
     const [githubCredentials, setGithubCredentials] = useState<GitHubCredentials>({
@@ -13,12 +21,12 @@ export const useGitHubIssues = (setCreationResult: (result: GitHubIssueCreationR
         repo: '',
     });
 
-    const handleGitHubCredentialsChange = (field: keyof GitHubCredentials, value: string) => {
+    const handleGitHubCredentialsChange = useCallback((field: keyof GitHubCredentials, value: string) => {
         setGithubCredentials((prev) => ({
             ...prev,
             [field]: value,
         }));
-    };
+    }, []);
 
     const createGitHubIssues = async (
         task: ExtractedTasks['mainTask'],
@@ -191,12 +199,11 @@ export const useGitHubIssues = (setCreationResult: (result: GitHubIssueCreationR
 
         if (isGitHubLoggedIn) {
             try {
-                const encryptedToken = localStorage.getItem('github_token');
-                if (!encryptedToken) {
+                const token = extendedSession?.accessToken;
+                if (!token) {
                     toast.error('GitHub token not found. Please login again.');
                     return;
                 }
-                const token = await decryptToken(encryptedToken);
 
                 if (selectedProject) {
                     const [owner, repo] = selectedRepo.split('/');
@@ -219,7 +226,7 @@ export const useGitHubIssues = (setCreationResult: (result: GitHubIssueCreationR
                     return;
                 }
             } catch (error) {
-                console.error('Error decrypting token:', error);
+                console.error('Error accessing token:', error);
                 toast.error('Error accessing GitHub token. Please login again.');
                 return;
             }
