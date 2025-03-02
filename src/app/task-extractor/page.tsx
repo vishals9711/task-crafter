@@ -29,6 +29,8 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import ParticleBackground from '@/components/ParticleBackground';
+import IssuesList from '@/components/IssuesList';
 
 export default function TaskExtractor() {
   const [inputText, setInputText] = useState('');
@@ -364,425 +366,372 @@ export default function TaskExtractor() {
   };
 
   return (
-    <div className="container mx-auto py-8 px-4">
-      <Toaster position="top-right" />
-      
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="mb-8"
-      >
-        <div className="flex flex-col md:flex-row justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold text-center md:text-left">Task Extractor</h1>
-          
-          <div className="mt-4 md:mt-0">
-            {isGitHubLoggedIn ? (
-              <div className="flex flex-col md:flex-row items-center gap-3">
-                <div className="flex items-center mb-2 md:mb-0">
-                  <div className="bg-green-500 rounded-full w-2 h-2 mr-2"></div>
-                  <span className="text-sm text-muted-foreground">Connected to GitHub</span>
-                </div>
-                
-                {showRepoSelector ? (
-                  <div className="flex flex-col sm:flex-row items-center gap-2 w-full md:w-auto">
-                    <Popover open={open} onOpenChange={(isOpen) => {
-                      setOpen(isOpen);
-                      // If popover is closing and no repo is selected, hide the repo selector
-                      if (!isOpen && !selectedRepo) {
-                        setShowRepoSelector(false);
-                      }
-                    }}>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          role="combobox"
-                          aria-expanded={open}
-                          className="w-full sm:w-[280px] justify-between"
-                        >
-                          <span className="truncate mr-2 max-w-[200px]">
-                            {selectedRepo
-                              ? userRepos.find((repo) => `${repo.owner}/${repo.name}` === selectedRepo)
-                                ? `${selectedRepo}`
-                                : "Select repository..."
-                              : "Select repository..."}
-                          </span>
-                          <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50 flex-none" />
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-[280px] p-0 z-50">
-                        <Command shouldFilter={true}>
-                          <CommandInput placeholder="Search repositories..." className="h-9" />
-                          <CommandList>
-                            <CommandEmpty>No repositories found.</CommandEmpty>
-                            <CommandGroup className="overflow-auto">
-                              {userRepos.map((repo) => (
-                                <CommandItem
-                                key={`${repo.owner}/${repo.name}`}
-                                value={`${repo.owner}/${repo.name}`}
-                                className="cursor-pointer relative hover:bg-accent hover:text-accent-foreground data-[disabled='false']:pointer-events-auto"
-                                onSelect={(currentValue) => {
-                                  console.log('CommandItem clicked', repo.name, currentValue); // Debugging
-                                  handleRepoSelect(currentValue === selectedRepo ? "" : currentValue);
-                                  setOpen(false);
-                                }}
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  e.stopPropagation();
-                                  console.log('CommandItem direct click', repo.name); // Debugging
-                                  const value = `${repo.owner}/${repo.name}`;
-                                  handleRepoSelect(value === selectedRepo ? "" : value);
-                                  setOpen(false);
-                                }}
-                              >
-                              <div className="flex items-center justify-between w-full">
-                                <span>{`${repo.owner}/${repo.name}`}</span>
-                                <Check
-                                  className={cn(
-                                    "ml-auto h-4 w-4",
-                                    selectedRepo === `${repo.owner}/${repo.name}` ? "opacity-100" : "opacity-0"
-                                  )}
-                                />
-                              </div>
-                            </CommandItem>
-                            
-                              ))}
-                            </CommandGroup>
-                          </CommandList>
-                        </Command>
-                      </PopoverContent>
-                    </Popover>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      onClick={() => setShowRepoSelector(false)}
-                      className="h-9 whitespace-nowrap"
-                    >
-                      Cancel
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="flex gap-2">
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      onClick={() => {
-                        setShowRepoSelector(true);
-                        setOpen(true);
-                      }}
-                      className="flex items-center gap-1"
-                    >
-                      Select Repository
-                    </Button>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      onClick={handleGitHubLogout}
-                    >
-                      Logout
-                    </Button>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <Button 
-                onClick={handleGitHubLogin}
-                className="flex items-center gap-2 bg-[#2da44e] hover:bg-[#2c974b]"
-              >
-                <Github size={16} />
-                Login with GitHub
-              </Button>
-            )}
-          </div>
-        </div>
+    <>
+      <ParticleBackground />
+      <div className="container mx-auto py-8 px-4 relative">
+        <Toaster position="top-right" />
         
-        <p className="text-center mb-2 text-muted-foreground">
-          Enter your free-form text below and we&apos;ll extract tasks and subtasks for you
-        </p>
-        
-        {isGitHubLoggedIn && selectedRepo && (
-          <p className="text-center text-sm text-green-500">
-            Tasks will be created in repository: <span className="font-semibold">{selectedRepo}</span>
-          </p>
-        )}
-      </motion.div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="mb-8"
         >
-          <Card className="h-full backdrop-blur-sm bg-white/10 dark:bg-black/10 border-white/20 shadow-lg">
-            <CardHeader>
-              <CardTitle>Input</CardTitle>
-              <CardDescription>
-                Enter your free-form text here. Be as detailed as possible.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Textarea
-                placeholder="e.g. Create a new user authentication system with login, registration, and password reset functionality..."
-                className="min-h-[300px] bg-transparent backdrop-blur-sm"
-                value={inputText}
-                onChange={handleInputChange}
-              />
-            </CardContent>
-            <CardFooter>
-              <Button 
-                onClick={handleExtractTasks} 
-                disabled={isProcessing || !inputText.trim()}
-                className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600"
-              >
-                {isProcessing ? 'Processing...' : 'Extract Tasks'}
-              </Button>
-            </CardFooter>
-          </Card>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5, delay: 0.4 }}
-        >
-          <Card className="h-full backdrop-blur-sm bg-white/10 dark:bg-black/10 border-white/20 shadow-lg">
-            <CardHeader>
-              <CardTitle>Extracted Tasks</CardTitle>
-              <CardDescription>
-                Review and confirm the extracted tasks and subtasks
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="min-h-[300px]">
-              {isProcessing ? (
-                <div className="space-y-4">
-                  <Skeleton className="h-8 w-3/4" />
-                  <Skeleton className="h-20 w-full" />
-                  <Skeleton className="h-6 w-1/2" />
-                  <Skeleton className="h-6 w-2/3" />
-                  <Skeleton className="h-6 w-3/4" />
-                </div>
-              ) : extractedTasks?.success ? (
-                <div className="space-y-6">
-                  <div>
-                    <h3 className="text-lg font-semibold mb-2">Main Task</h3>
-                    <p className="text-sm mb-4">{extractedTasks.mainTask.description}</p>
+          <div className="flex flex-col md:flex-row justify-between items-center mb-6">
+            <h1 className="text-4xl font-bold text-center md:text-left bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-blue-400 to-green-400">
+              Task Extractor
+            </h1>
+            
+            <div className="mt-4 md:mt-0">
+              {isGitHubLoggedIn ? (
+                <div className="flex flex-col md:flex-row items-center gap-3">
+                  <div className="flex items-center mb-2 md:mb-0">
+                    <div className="bg-green-500 rounded-full w-2 h-2 mr-2"></div>
+                    <span className="text-sm text-white/70">Connected to GitHub</span>
                   </div>
                   
-                  <div>
-                    <h3 className="text-lg font-semibold mb-2">Subtasks</h3>
-                    <div className="space-y-3">
-                      {extractedTasks.mainTask.subtasks.map((subtask) => (
-                        <div key={subtask.id} className="flex items-start space-x-2">
-                          <Checkbox
-                            id={subtask.id}
-                            checked={subtask.selected}
-                            onCheckedChange={() => handleSubtaskToggle(subtask.id)}
-                            className="mt-1"
-                          />
-                          <div>
-                            <Label
-                              htmlFor={subtask.id}
-                              className="font-medium cursor-pointer"
-                            >
-                              {subtask.title}
-                            </Label>
-                            <p className="text-sm text-muted-foreground">
-                              {subtask.description}
-                            </p>
-                          </div>
-                        </div>
-                      ))}
+                  {showRepoSelector ? (
+                    <div className="flex flex-col sm:flex-row items-center gap-2 w-full md:w-auto">
+                      <Popover open={open} onOpenChange={setOpen}>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            role="combobox"
+                            aria-expanded={open}
+                            className="w-full sm:w-[280px] justify-between bg-white/5 border-white/10 hover:bg-white/10"
+                          >
+                            <span className="truncate mr-2 max-w-[200px]">
+                              {selectedRepo || "Select repository..."}
+                            </span>
+                            <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50 flex-none" />
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-[280px] p-0 bg-black/50 backdrop-blur-xl border-white/10">
+                          <Command className="bg-transparent">
+                            <CommandInput placeholder="Search repositories..." />
+                            <CommandList>
+                              <CommandEmpty>No repositories found.</CommandEmpty>
+                              <CommandGroup>
+                                {userRepos.map((repo) => (
+                                  <CommandItem
+                                    key={`${repo.owner}/${repo.name}`}
+                                    value={`${repo.owner}/${repo.name}`}
+                                    className="cursor-pointer relative hover:bg-white/5 data-[disabled='false']:pointer-events-auto"
+                                    onSelect={(value) => {
+                                      handleRepoSelect(value);
+                                      setOpen(false);
+                                    }}
+                                  >
+                                    <div className="flex items-center justify-between w-full">
+                                      <span>{`${repo.owner}/${repo.name}`}</span>
+                                      <Check
+                                        className={cn(
+                                          "ml-auto h-4 w-4",
+                                          selectedRepo === `${repo.owner}/${repo.name}` ? "opacity-100" : "opacity-0"
+                                        )}
+                                      />
+                                    </div>
+                                  </CommandItem>
+                                ))}
+                              </CommandGroup>
+                            </CommandList>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={() => setShowRepoSelector(false)}
+                        className="h-9 whitespace-nowrap hover:bg-white/5"
+                      >
+                        Cancel
+                      </Button>
                     </div>
-                  </div>
-
-                  {markdownText && (
-                    <div className="mt-4">
-                      <div className="flex justify-between items-center mb-2">
-                        <h3 className="text-lg font-semibold">Markdown</h3>
-                        <Button 
-                          variant="outline" 
-                          size="sm" 
-                          onClick={copyMarkdownToClipboard}
-                          className="flex items-center gap-1"
-                        >
-                          <Copy size={14} />
-                          Copy
-                        </Button>
-                      </div>
-                      <div className="bg-black/20 p-3 rounded-md">
-                        <pre className="text-xs whitespace-pre-wrap">{markdownText}</pre>
-                      </div>
+                  ) : (
+                    <div className="flex gap-2">
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={() => {
+                          setShowRepoSelector(true);
+                          setOpen(true);
+                        }}
+                        className="flex items-center gap-1 bg-white/5 border-white/10 hover:bg-white/10"
+                      >
+                        Select Repository
+                      </Button>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={handleGitHubLogout}
+                        className="hover:bg-white/5"
+                      >
+                        Logout
+                      </Button>
                     </div>
                   )}
                 </div>
-              ) : extractedTasks?.error ? (
-                <div className="flex items-center justify-center h-full">
-                  <p className="text-red-500">{extractedTasks.error}</p>
-                </div>
               ) : (
-                <div className="flex items-center justify-center h-full">
-                  <p className="text-muted-foreground">
-                    Enter your text and click &quot;Extract Tasks&quot; to see the results here
-                  </p>
-                </div>
-              )}
-            </CardContent>
-            <CardFooter>
-              {isGitHubLoggedIn && selectedRepo ? (
-                <Button
-                  onClick={handleCreateGitHubIssues}
-                  disabled={!extractedTasks?.success || isProcessing || isCreatingIssues}
-                  className="w-full bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600"
+                <Button 
+                  onClick={handleGitHubLogin}
+                  className="flex items-center gap-2 bg-[#2da44e] hover:bg-[#2c974b]"
                 >
-                  {isCreatingIssues ? 'Creating...' : 'Create GitHub Issues'}
+                  <Github size={16} />
+                  Login with GitHub
                 </Button>
-              ) : (
-                <Dialog open={showGitHubDialog} onOpenChange={setShowGitHubDialog}>
-                  <DialogTrigger asChild>
-                    <Button
-                      disabled={!extractedTasks?.success || isProcessing}
-                      className="w-full bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600"
-                    >
-                      Create GitHub Issues
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="sm:max-w-[425px] backdrop-blur-sm bg-white/20 dark:bg-black/20 border-white/20">
-                    <DialogHeader>
-                      <DialogTitle>GitHub Integration</DialogTitle>
-                      <DialogDescription>
-                        Create GitHub issues from your extracted tasks
-                      </DialogDescription>
-                    </DialogHeader>
+              )}
+            </div>
+          </div>
+          
+          <p className="text-center mb-2 text-white/70">
+            Enter your free-form text below and we&apos;ll extract tasks and subtasks for you
+          </p>
+          
+          {isGitHubLoggedIn && selectedRepo && (
+            <p className="text-center text-sm text-green-400">
+              Tasks will be created in repository: <span className="font-semibold">{selectedRepo}</span>
+            </p>
+          )}
+        </motion.div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
+            <Card className="h-full bg-black/30 backdrop-blur-xl border-white/10 shadow-2xl">
+              <CardHeader>
+                <CardTitle className="text-white/90">Input</CardTitle>
+                <CardDescription className="text-white/50">
+                  Enter your free-form text here. Be as detailed as possible.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Textarea
+                  placeholder="e.g. Create a new user authentication system with login, registration, and password reset functionality..."
+                  className="min-h-[300px] bg-black/20 border-white/10 focus:border-white/20 placeholder:text-white/30"
+                  value={inputText}
+                  onChange={handleInputChange}
+                />
+              </CardContent>
+              <CardFooter>
+                <Button 
+                  onClick={handleExtractTasks} 
+                  disabled={isProcessing || !inputText.trim()}
+                  className="w-full bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 transition-all duration-300"
+                >
+                  {isProcessing ? 'Processing...' : 'Extract Tasks'}
+                </Button>
+              </CardFooter>
+            </Card>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+          >
+            <Card className="h-full bg-black/30 backdrop-blur-xl border-white/10 shadow-2xl">
+              <CardHeader>
+                <CardTitle className="text-white/90">Extracted Tasks</CardTitle>
+                <CardDescription className="text-white/50">
+                  Review and confirm the extracted tasks and subtasks
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="min-h-[300px]">
+                {isProcessing ? (
+                  <div className="space-y-4">
+                    <Skeleton className="h-8 w-3/4 bg-white/5" />
+                    <Skeleton className="h-20 w-full bg-white/5" />
+                    <Skeleton className="h-6 w-1/2 bg-white/5" />
+                    <Skeleton className="h-6 w-2/3 bg-white/5" />
+                    <Skeleton className="h-6 w-3/4 bg-white/5" />
+                  </div>
+                ) : extractedTasks?.success ? (
+                  <div className="space-y-6">
+                    <div>
+                      <h3 className="text-lg font-semibold mb-2 text-white/90">Main Task</h3>
+                      <p className="text-sm text-white/70">{extractedTasks.mainTask.description}</p>
+                    </div>
                     
-                    <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="w-full">
-                      <TabsList className="grid w-full grid-cols-2">
-                        <TabsTrigger value="credentials">Manual Credentials</TabsTrigger>
-                        <TabsTrigger value="oauth">GitHub Login</TabsTrigger>
-                      </TabsList>
-                      
-                      <TabsContent value="credentials" className="space-y-4 py-4">
-                        <div className="grid gap-4">
-                          <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="token" className="text-right">
-                              Token
-                            </Label>
-                            <Input
-                              id="token"
-                              type="password"
-                              value={githubCredentials.token}
-                              onChange={(e) => handleGitHubCredentialsChange('token', e.target.value)}
-                              className="col-span-3 bg-transparent"
+                    <div>
+                      <h3 className="text-lg font-semibold mb-2 text-white/90">Subtasks</h3>
+                      <div className="space-y-3">
+                        {extractedTasks.mainTask.subtasks.map((subtask) => (
+                          <div key={subtask.id} className="flex items-start space-x-2">
+                            <Checkbox
+                              id={subtask.id}
+                              checked={subtask.selected}
+                              onCheckedChange={() => handleSubtaskToggle(subtask.id)}
+                              className="mt-1 border-white/30"
                             />
+                            <div>
+                              <Label
+                                htmlFor={subtask.id}
+                                className="font-medium cursor-pointer text-white/90"
+                              >
+                                {subtask.title}
+                              </Label>
+                              <p className="text-sm text-white/50">
+                                {subtask.description}
+                              </p>
+                            </div>
                           </div>
-                          <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="owner" className="text-right">
-                              Owner
-                            </Label>
-                            <Input
-                              id="owner"
-                              value={githubCredentials.owner}
-                              onChange={(e) => handleGitHubCredentialsChange('owner', e.target.value)}
-                              className="col-span-3 bg-transparent"
-                            />
-                          </div>
-                          <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="repo" className="text-right">
-                              Repo
-                            </Label>
-                            <Input
-                              id="repo"
-                              value={githubCredentials.repo}
-                              onChange={(e) => handleGitHubCredentialsChange('repo', e.target.value)}
-                              className="col-span-3 bg-transparent"
-                            />
-                          </div>
-                        </div>
-                      </TabsContent>
-                      
-                      <TabsContent value="oauth" className="space-y-4 py-4">
-                        <div className="flex flex-col items-center justify-center py-4">
-                          <p className="text-sm text-muted-foreground mb-4">
-                            Login with GitHub to select repositories and create issues
-                          </p>
+                        ))}
+                      </div>
+                    </div>
+
+                    {!isGitHubLoggedIn && markdownText && (
+                      <div className="mt-4">
+                        <div className="flex justify-between items-center mb-2">
+                          <h3 className="text-lg font-semibold text-white/90">Markdown</h3>
                           <Button 
-                            onClick={handleGitHubLogin}
-                            className="bg-[#2da44e] hover:bg-[#2c974b]"
+                            variant="outline" 
+                            size="sm" 
+                            onClick={copyMarkdownToClipboard}
+                            className="flex items-center gap-1 bg-white/5 border-white/10 hover:bg-white/10"
                           >
-                            Login with GitHub
+                            <Copy size={14} />
+                            Copy
                           </Button>
                         </div>
-                      </TabsContent>
-                    </Tabs>
-                    
-                    <DialogFooter>
-                      <Button
-                        onClick={handleCreateGitHubIssues}
-                        disabled={isCreatingIssues || (activeTab === 'oauth') || (activeTab === 'credentials' && (!githubCredentials.token || !githubCredentials.owner || !githubCredentials.repo))}
-                        className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600"
-                      >
-                        {isCreatingIssues ? 'Creating...' : 'Create Issues'}
-                      </Button>
-                    </DialogFooter>
-                  </DialogContent>
-                </Dialog>
-              )}
-            </CardFooter>
-          </Card>
-        </motion.div>
-      </div>
-
-      {creationResult?.success && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="mt-8"
-        >
-          <Card className="backdrop-blur-sm bg-white/10 dark:bg-black/10 border-white/20 shadow-lg">
-            <CardHeader>
-              <CardTitle>GitHub Issues Created</CardTitle>
-              <CardDescription>
-                The following GitHub issues have been created successfully
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div>
-                  <h3 className="text-lg font-semibold mb-2">Main Issue</h3>
-                  <a
-                    href={creationResult.mainIssueUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-500 hover:underline"
-                  >
-                    {creationResult.mainIssueUrl}
-                  </a>
-                </div>
-                
-                {creationResult.subtaskIssueUrls && creationResult.subtaskIssueUrls.length > 0 && (
-                  <div>
-                    <h3 className="text-lg font-semibold mb-2">Subtask Issues</h3>
-                    <ul className="space-y-2">
-                      {creationResult.subtaskIssueUrls.map((url, index) => (
-                        <li key={index}>
-                          <a
-                            href={url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-blue-500 hover:underline"
-                          >
-                            {url}
-                          </a>
-                        </li>
-                      ))}
-                    </ul>
+                        <div className="bg-black/20 p-3 rounded-md">
+                          <pre className="text-xs whitespace-pre-wrap text-white/70">{markdownText}</pre>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ) : extractedTasks?.error ? (
+                  <div className="flex items-center justify-center h-full">
+                    <p className="text-red-400">{extractedTasks.error}</p>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-center h-full">
+                    <p className="text-white/50">
+                      Enter your text and click &quot;Extract Tasks&quot; to see the results here
+                    </p>
                   </div>
                 )}
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
-      )}
-    </div>
+              </CardContent>
+              <CardFooter>
+                {isGitHubLoggedIn && selectedRepo ? (
+                  <Button
+                    onClick={handleCreateGitHubIssues}
+                    disabled={!extractedTasks?.success || isProcessing || isCreatingIssues}
+                    className="w-full bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 transition-all duration-300"
+                  >
+                    {isCreatingIssues ? 'Creating...' : 'Create GitHub Issues'}
+                  </Button>
+                ) : (
+                  <Dialog open={showGitHubDialog} onOpenChange={setShowGitHubDialog}>
+                    <DialogTrigger asChild>
+                      <Button
+                        disabled={!extractedTasks?.success || isProcessing}
+                        className="w-full bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 transition-all duration-300"
+                      >
+                        Create GitHub Issues
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[425px] bg-black/50 backdrop-blur-xl border-white/10">
+                      <DialogHeader>
+                        <DialogTitle className="text-white/90">GitHub Integration</DialogTitle>
+                        <DialogDescription className="text-white/50">
+                          Create GitHub issues from your extracted tasks
+                        </DialogDescription>
+                      </DialogHeader>
+                      
+                      <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="w-full">
+                        <TabsList className="grid w-full grid-cols-2 bg-black/30">
+                          <TabsTrigger value="credentials">Manual Credentials</TabsTrigger>
+                          <TabsTrigger value="oauth">GitHub Login</TabsTrigger>
+                        </TabsList>
+                        
+                        <TabsContent value="credentials" className="space-y-4 py-4">
+                          <div className="grid gap-4">
+                            <div className="grid grid-cols-4 items-center gap-4">
+                              <Label htmlFor="token" className="text-right text-white/70">
+                                Token
+                              </Label>
+                              <Input
+                                id="token"
+                                type="password"
+                                value={githubCredentials.token}
+                                onChange={(e) => handleGitHubCredentialsChange('token', e.target.value)}
+                                className="col-span-3 bg-black/20 border-white/10"
+                              />
+                            </div>
+                            <div className="grid grid-cols-4 items-center gap-4">
+                              <Label htmlFor="owner" className="text-right text-white/70">
+                                Owner
+                              </Label>
+                              <Input
+                                id="owner"
+                                value={githubCredentials.owner}
+                                onChange={(e) => handleGitHubCredentialsChange('owner', e.target.value)}
+                                className="col-span-3 bg-black/20 border-white/10"
+                              />
+                            </div>
+                            <div className="grid grid-cols-4 items-center gap-4">
+                              <Label htmlFor="repo" className="text-right text-white/70">
+                                Repo
+                              </Label>
+                              <Input
+                                id="repo"
+                                value={githubCredentials.repo}
+                                onChange={(e) => handleGitHubCredentialsChange('repo', e.target.value)}
+                                className="col-span-3 bg-black/20 border-white/10"
+                              />
+                            </div>
+                          </div>
+                        </TabsContent>
+                        
+                        <TabsContent value="oauth" className="space-y-4 py-4">
+                          <div className="flex flex-col items-center justify-center py-4">
+                            <p className="text-sm text-white/50 mb-4">
+                              Login with GitHub to select repositories and create issues
+                            </p>
+                            <Button 
+                              onClick={handleGitHubLogin}
+                              className="bg-[#2da44e] hover:bg-[#2c974b]"
+                            >
+                              Login with GitHub
+                            </Button>
+                          </div>
+                        </TabsContent>
+                      </Tabs>
+                      
+                      <DialogFooter>
+                        <Button
+                          onClick={handleCreateGitHubIssues}
+                          disabled={isCreatingIssues || (activeTab === 'oauth') || (activeTab === 'credentials' && (!githubCredentials.token || !githubCredentials.owner || !githubCredentials.repo))}
+                          className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 transition-all duration-300"
+                        >
+                          {isCreatingIssues ? 'Creating...' : 'Create Issues'}
+                        </Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+                )}
+              </CardFooter>
+            </Card>
+          </motion.div>
+        </div>
+
+        {creationResult?.success && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="mt-8"
+          >
+            <IssuesList
+              mainIssue={{ url: creationResult.mainIssueUrl || '' }}
+              subtaskIssues={(creationResult.subtaskIssueUrls || []).map(url => ({ url }))}
+            />
+          </motion.div>
+        )}
+      </div>
+    </>
   );
 } 
