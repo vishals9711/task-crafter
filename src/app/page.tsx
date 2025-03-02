@@ -5,74 +5,144 @@ import { motion } from "framer-motion";
 
 export default function Home() {
   return (
-    <div className="grid grid-rows-[1fr_auto] items-center justify-items-center min-h-[calc(100vh-64px)] p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <div className="flex flex-col gap-8 items-center text-center max-w-3xl mx-auto">
+    <div className="relative min-h-screen overflow-hidden bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900">
+      {/* Floating shapes */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <h1 className="text-4xl sm:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-500">
-            Task Crafter
-          </h1>
-          <p className="text-xl mb-8 text-muted-foreground">
-            Transform your ideas into structured tasks and GitHub issues with the power of AI
-          </p>
-        </motion.div>
-
+          className="absolute w-72 h-72 bg-blue-500/10 rounded-full blur-3xl"
+          animate={{
+            x: [0, 100, 0],
+            y: [0, -100, 0],
+          }}
+          transition={{
+            duration: 20,
+            repeat: Infinity,
+            ease: "linear"
+          }}
+          style={{ top: '10%', left: '20%' }}
+        />
         <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="w-full max-w-2xl backdrop-blur-sm bg-white/10 dark:bg-black/10 border border-white/20 rounded-xl p-6 shadow-lg"
-        >
-          <h2 className="text-2xl font-semibold mb-4">How it works</h2>
-          <ol className="list-decimal list-inside space-y-4 text-left">
-            <li className="p-2 rounded-lg bg-white/5 dark:bg-black/5">
-              <span className="font-medium">Enter your free-form text</span>
-              <p className="text-sm text-muted-foreground ml-5 mt-1">
-                Describe your project, feature, or task in natural language
-              </p>
-            </li>
-            <li className="p-2 rounded-lg bg-white/5 dark:bg-black/5">
-              <span className="font-medium">AI extracts tasks and subtasks</span>
-              <p className="text-sm text-muted-foreground ml-5 mt-1">
-                Our AI analyzes your text and identifies the main task and subtasks
-              </p>
-            </li>
-            <li className="p-2 rounded-lg bg-white/5 dark:bg-black/5">
-              <span className="font-medium">Review and confirm</span>
-              <p className="text-sm text-muted-foreground ml-5 mt-1">
-                Check the extracted tasks and make any necessary adjustments
-              </p>
-            </li>
-            <li className="p-2 rounded-lg bg-white/5 dark:bg-black/5">
-              <span className="font-medium">Create GitHub issues</span>
-              <p className="text-sm text-muted-foreground ml-5 mt-1">
-                With one click, create GitHub issues for your tasks and subtasks
-              </p>
-            </li>
-          </ol>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.4 }}
-          className="mt-8"
-        >
-          <Link
-            href="/task-extractor"
-            className="rounded-full px-8 py-4 text-lg font-medium bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white shadow-lg transition-all hover:shadow-xl hover:-translate-y-1"
-          >
-            Try Task Extractor
-          </Link>
-        </motion.div>
+          className="absolute w-96 h-96 bg-purple-500/10 rounded-full blur-3xl"
+          animate={{
+            x: [0, -100, 0],
+            y: [0, 100, 0],
+          }}
+          transition={{
+            duration: 25,
+            repeat: Infinity,
+            ease: "linear"
+          }}
+          style={{ top: '40%', right: '15%' }}
+        />
       </div>
 
-      <footer className="flex gap-6 flex-wrap items-center justify-center text-sm text-muted-foreground">
-        <p>Built with Next.js 15, TypeScript, and TailwindCSS</p>
-      </footer>
+      <div className="relative grid grid-rows-[1fr_auto] items-center justify-items-center min-h-[calc(100vh-64px)] p-8 pb-20 gap-16 sm:p-20">
+        <div className="flex flex-col gap-12 items-center text-center max-w-4xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: -30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, ease: "easeOut" }}
+            className="space-y-6"
+          >
+            <h1 className="text-5xl sm:text-7xl font-extrabold tracking-tight mb-6">
+              <span className="inline-block bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
+                Turn Your Ideas into
+              </span>
+              <br />
+              <motion.span
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3, duration: 0.7 }}
+                className="inline-block bg-clip-text text-transparent bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"
+              >
+                GitHub Tasks — Instantly
+              </motion.span>
+            </h1>
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5, duration: 0.7 }}
+              className="text-xl sm:text-2xl text-slate-300 max-w-2xl mx-auto"
+            >
+              Automate task creation from free-form text using AI
+            </motion.p>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.7, duration: 0.7 }}
+            className="flex flex-col sm:flex-row gap-6 items-center justify-center"
+          >
+            <Link
+              href="/task-extractor"
+              className="group relative px-8 py-4 text-lg font-medium overflow-hidden rounded-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"
+            >
+              <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <span className="relative flex items-center gap-2">
+                Try Now
+                <motion.svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  animate={{ x: [0, 5, 0] }}
+                  transition={{ duration: 1.5, repeat: Infinity }}
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </motion.svg>
+              </span>
+            </Link>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.7, delay: 0.9 }}
+            className="w-full max-w-3xl backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl p-8 shadow-2xl"
+          >
+            <h2 className="text-2xl font-bold mb-8 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
+              How it works
+            </h2>
+            <div className="grid sm:grid-cols-2 gap-6">
+              {[
+                {
+                  title: "Describe Your Vision",
+                  description: "Write your ideas in natural language, just as you think them"
+                },
+                {
+                  title: "AI Processing",
+                  description: "Our AI breaks down your text into structured tasks and subtasks"
+                },
+                {
+                  title: "Review & Refine",
+                  description: "Fine-tune the generated tasks to match your needs perfectly"
+                },
+                {
+                  title: "Instant GitHub Sync",
+                  description: "Convert tasks into GitHub issues with a single click"
+                }
+              ].map((item, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 1.1 + index * 0.1, duration: 0.5 }}
+                  className="p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-colors"
+                >
+                  <h3 className="text-lg font-semibold mb-2">{item.title}</h3>
+                  <p className="text-slate-300">{item.description}</p>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        </div>
+
+        <footer className="relative text-center text-sm text-slate-400">
+          <p>Built with Next.js 15, TypeScript, and TailwindCSS</p>
+        </footer>
+      </div>
     </div>
   );
 }

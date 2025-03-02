@@ -138,17 +138,5 @@ export const mockGitHubIssueCreationResponses = {
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
         }
-    ],
-    projectItems: [
-        {
-            id: 'PVTI_lADOBHXBpc4ANoWzM4AGR0k',
-            type: 'ISSUE',
-            content: {
-                type: 'Issue',
-                body: '## Environment Setup Issue',
-                number: 1,
-                title: 'Node.js Environment Setup'
-            }
-        }
     ]
 }; 

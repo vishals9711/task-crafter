@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Link from "next/link";
+import ClientNavigation from "@/components/ClientNavigation";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,16 +32,7 @@ export default function RootLayout({
         <header className="border-b border-white/10 backdrop-blur-sm bg-white/5 dark:bg-black/5">
           <div className="container mx-auto py-4 px-4 flex items-center justify-between">
             <Link href="/" className="text-xl font-bold">Task Crafter</Link>
-            <nav>
-              <ul className="flex space-x-6">
-                <li>
-                  <Link href="/" className="hover:text-blue-500 transition-colors">Home</Link>
-                </li>
-                <li>
-                  <Link href="/task-extractor" className="hover:text-blue-500 transition-colors">Task Extractor</Link>
-                </li>
-              </ul>
-            </nav>
+            <ClientNavigation />
           </div>
         </header>
         <main>
