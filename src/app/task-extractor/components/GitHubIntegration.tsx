@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { Github, Check, ChevronsUpDown } from 'lucide-react';
+import { GithubIcon, Check, ChevronsUpDown } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import {
   Command,
@@ -175,10 +175,12 @@ export function GitHubIntegration({
   return (
     <Button 
       onClick={handleGitHubLogin}
-      className="flex items-center gap-2 bg-[#2da44e] hover:bg-[#2c974b]"
+      className="flex items-center gap-2 bg-[#2da44e] hover:bg-[#2c974b] px-6 py-5 text-base"
+      title="Sign in to save your preferences and access additional features (optional)"
     >
-      <Github size={16} />
-      Login with GitHub
+      <GithubIcon size={20} />
+      <span className="font-medium">Login with GitHub</span>
+      <span className="text-xs ml-1 bg-white/20 px-2 py-0.5 rounded-full">optional</span>
     </Button>
   );
 } 

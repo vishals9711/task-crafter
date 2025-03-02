@@ -95,13 +95,17 @@ export default function TaskExtractor() {
             Enter your free-form text below and we&apos;ll extract tasks and subtasks for you
           </p>
           
-          {isGitHubLoggedIn && (
+          {isGitHubLoggedIn ? (
             <p className="text-center text-sm text-green-400">
               {selectedProject && isProjectsEnabled ? (
                 <>Tasks will be created in project: <span className="font-semibold">{selectedProject.title}</span></>
               ) : selectedRepo ? (
                 <>Tasks will be created in repository: <span className="font-semibold">{selectedRepo}</span></>
               ) : null}
+            </p>
+          ) : (
+            <p className="text-center text-sm text-blue-400">
+              You can use Task Extractor without signing in, but GitHub authentication enables creating issues directly
             </p>
           )}
         </motion.div>

@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Link from "next/link";
 import ClientNavigation from "@/components/ClientNavigation";
+import { Providers } from "./providers";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,15 +30,17 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <header className="border-b border-white/10 backdrop-blur-sm bg-white/5 dark:bg-black/5">
-          <div className="container mx-auto py-4 px-4 flex items-center justify-between">
-            <Link href="/" className="text-xl font-bold">Task Crafter</Link>
-            <ClientNavigation />
-          </div>
-        </header>
-        <main>
-          {children}
-        </main>
+        <Providers>
+          <header className="border-b border-white/10 backdrop-blur-sm bg-white/5 dark:bg-black/5">
+            <div className="container mx-auto py-4 px-4 flex items-center justify-between">
+              <Link href="/" className="text-xl font-bold">Task Crafter</Link>
+              <ClientNavigation />
+            </div>
+          </header>
+          <main>
+            {children}
+          </main>
+        </Providers>
       </body>
     </html>
   );
