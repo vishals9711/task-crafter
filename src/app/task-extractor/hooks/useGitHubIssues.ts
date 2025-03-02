@@ -181,6 +181,12 @@ export const useGitHubIssues = (setCreationResult: (result: GitHubIssueCreationR
     ) => {
         if (!extractedTasks) return;
 
+        // If not logged in, show a toast message suggesting to sign in
+        if (!isGitHubLoggedIn) {
+            toast.error('Please sign in with GitHub to create issues');
+            return;
+        }
+
         let credentials = githubCredentials;
 
         if (isGitHubLoggedIn) {

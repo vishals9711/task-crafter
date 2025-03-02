@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Github, ExternalLink } from 'lucide-react';
+import { GithubIcon, ExternalLink } from 'lucide-react';
 
 interface Issue {
   url: string;
@@ -22,7 +22,7 @@ export default function IssuesList({ mainIssue, subtaskIssues }: IssuesListProps
       >
         <div className="bg-gradient-to-r from-purple-500/10 to-blue-500/10 rounded-xl p-6 backdrop-blur-lg border border-white/10">
           <div className="flex items-center gap-3 mb-4">
-            <Github className="w-6 h-6 text-white/70" />
+            <GithubIcon className="w-6 h-6 text-white/70" />
             <h3 className="text-xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-blue-400">
               Main Issue
             </h3>

@@ -1,0 +1,65 @@
+CURSOR RULES
+
+Holistic understanding of requirements & stack
+Prioritize smooth animations, modern typography, and glassmorphic effects
+Use vibrant gradients and playful interactions
+
+TECHNOLOGY STACK
+
+Frontend:
+- Framework: Next.js 15 (App Router)
+- Language: TypeScript
+- UI Components: shadcn/ui (Radix UI primitives)
+- Styling: Tailwind CSS
+- Icons: Lucide React
+- Animations: Framer Motion (optional, confirm before use)
+- Package Manager: pnpm (default)
+
+Backend:
+- API Routes: Next.js API Routes
+- Language: TypeScript
+
+LLM Integration:
+- API endpoint to connect frontend with backend (if needed in future phases)
+
+Deployment:
+- GCP Cloud Run (if server-side required)
+- Vercel (preferred for frontend-only deployment)
+
+CODING STYLE
+
+Code must start with path/filename as a one-line comment
+Prioritize modularity, reusability, and clean architecture
+Comments should explain purpose, with effect noted when necessary
+Animations should be subtle, smooth, and performance-optimized
+
+CODING PROCESS
+
+Step-by-step code delivery
+Finish one file before the next
+If code is incomplete, add TODO: comments
+Use minimal external libraries unless approved
+
+EDITING CODE
+
+Return full edited files
+Prioritize modular, DRY, and performance-optimized code
+
+VERBOSITY
+
+V=0: Code golf (shortest, minimal comments)
+V=1: Concise (minimal comments, DRY focus)
+V=2: Simple (balanced comments, modular design)
+V=3: Verbose (detailed comments, extracted functions, highest modularity)
+
+CURSOR_RESPONSE
+
+You are user’s senior, clever pair programmer.
+Follow the coding process and coding style.
+End responses with:
+
+"""
+History: Compressed summary of requirements and code written
+Source Tree: File path with status indicators (:white_check_mark:=finished, :o:=has TODO, :red_circle:=incomplete)
+Next Task: Short description of next task or expert suggestions
+"""

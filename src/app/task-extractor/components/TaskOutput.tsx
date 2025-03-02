@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Copy } from 'lucide-react';
+import { Copy, GithubIcon } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { ExtractedTasks } from '@/types/task';
 import {
@@ -11,6 +11,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { signIn } from 'next-auth/react';
 
 interface TaskOutputProps {
   isProcessing: boolean;
@@ -93,7 +94,8 @@ export function TaskOutput({
                 </div>
               </div>
 
-              {!isGitHubLoggedIn && markdownText && (
+              {/* Always show Markdown section regardless of login status */}
+              {markdownText && (
                 <div className="mt-4">
                   <div className="flex justify-between items-center mb-2">
                     <h3 className="text-lg font-semibold text-white/90">Markdown</h3>
@@ -126,26 +128,41 @@ export function TaskOutput({
           )}
         </CardContent>
         {extractedTasks?.success && (
-          <CardFooter className="flex justify-center mt-4">
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  onClick={selectedRepo || selectedProject ? onCreateIssues : undefined}
-                  disabled={!extractedTasks?.success || isProcessing || isCreatingIssues}
-                  className="w-full bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 transition-all duration-300"
+          <CardFooter className="flex flex-col gap-3 mt-4">
+            {isGitHubLoggedIn ? (
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    onClick={selectedRepo || selectedProject ? onCreateIssues : undefined}
+                    disabled={!extractedTasks?.success || isProcessing || isCreatingIssues}
+                    className="w-full bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 transition-all duration-300"
+                  >
+                    {isCreatingIssues ? 'Creating...' : 'Create GitHub Issues'}
+                  </Button>
+                </PopoverTrigger>
+                {!selectedRepo && !selectedProject && (
+                  <PopoverContent className="w-80 bg-black/50 backdrop-blur-xl border-white/10">
+                    <div className="text-center p-4">
+                      <p className="text-white/90 font-semibold mb-2">Repository Not Selected</p>
+                      <p className="text-white/70 text-sm">Please select a GitHub repository or project to create issues.</p>
+                    </div>
+                  </PopoverContent>
+                )}
+              </Popover>
+            ) : (
+              <>
+                <Button 
+                  onClick={() => signIn("github")}
+                  className="w-full flex items-center gap-2 bg-[#2da44e] hover:bg-[#2c974b] py-6"
                 >
-                  {isCreatingIssues ? 'Creating...' : 'Create GitHub Issues'}
+                  <GithubIcon size={20} />
+                  <span className="font-medium">Sign in with GitHub to create issues</span>
                 </Button>
-              </PopoverTrigger>
-              {!selectedRepo && !selectedProject && (
-                <PopoverContent className="w-80 bg-black/50 backdrop-blur-xl border-white/10">
-                  <div className="text-center p-4">
-                    <p className="text-white/90 font-semibold mb-2">Repository Not Selected</p>
-                    <p className="text-white/70 text-sm">Please select a GitHub repository or project to create issues.</p>
-                  </div>
-                </PopoverContent>
-              )}
-            </Popover>
+                <p className="text-xs text-center text-white/50">
+                  Authentication is optional. You can still copy the Markdown without signing in.
+                </p>
+              </>
+            )}
           </CardFooter>
         )}
       </Card>
