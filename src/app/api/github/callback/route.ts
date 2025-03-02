@@ -23,10 +23,8 @@ export async function GET(request: NextRequest) {
                 code,
             }),
         });
-        console.log('Token response:', tokenResponse);
 
         const tokenData = await tokenResponse.json();
-        console.log('Token response:', tokenResponse);
         if (!tokenData.access_token) {
             throw new Error('Failed to get access token');
         }

@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
 
         // If using OAuth, get the token from cookies
         if (useOAuth) {
-            const cookieStore = cookies();
+            const cookieStore = await cookies();
             const githubToken = cookieStore.get('github_token')?.value;
 
             if (!githubToken) {

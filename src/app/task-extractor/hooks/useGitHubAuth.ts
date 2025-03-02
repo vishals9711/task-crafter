@@ -1,16 +1,19 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
 import { decryptToken } from '@/lib/tokenEncryption';
+
+const scopes = ['repo'];
 
 export const useGitHubAuth = () => {
     const [isGitHubLoggedIn, setIsGitHubLoggedIn] = useState(false);
 
-    useEffect(() => {
-        checkGitHubAuth();
-        checkLoginSuccess();
+    const handleGitHubLogout = useCallback(() => {
+        localStorage.removeItem('github_token');
+        setIsGitHubLoggedIn(false);
+        toast.success('Logged out from GitHub');
     }, []);
 
-    const checkGitHubAuth = async () => {
+    const checkGitHubAuth = useCallback(async () => {
         const encryptedToken = localStorage.getItem('github_token');
         if (encryptedToken) {
             try {
@@ -21,7 +24,12 @@ export const useGitHubAuth = () => {
                 handleGitHubLogout();
             }
         }
-    };
+    }, [handleGitHubLogout]);
+
+    useEffect(() => {
+        checkGitHubAuth();
+        checkLoginSuccess();
+    }, [checkGitHubAuth]);
 
     const checkLoginSuccess = () => {
         const urlParams = new URLSearchParams(window.location.search);
@@ -34,16 +42,10 @@ export const useGitHubAuth = () => {
     const handleGitHubLogin = () => {
         const clientId = process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID;
         const redirectUri = `${window.location.origin}/github-callback`;
-        const scope = 'repo read:project';
+        const scope = scopes.join(' ');
 
         localStorage.setItem('github_redirect', window.location.href);
         window.location.href = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${scope}`;
-    };
-
-    const handleGitHubLogout = () => {
-        localStorage.removeItem('github_token');
-        setIsGitHubLoggedIn(false);
-        toast.success('Logged out from GitHub');
     };
 
     return {

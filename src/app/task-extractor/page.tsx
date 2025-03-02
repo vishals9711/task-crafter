@@ -128,10 +128,6 @@ export default function TaskExtractor() {
           />
         </div>
 
-        {(() => {
-          console.log('Creation Result:', creationResult);
-          return null;
-        })()}
         {creationResult && creationResult?.success && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -139,13 +135,6 @@ export default function TaskExtractor() {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="mt-8 relative z-10 bg-black/20 rounded-xl backdrop-blur-sm"
           >
-            {(() => {
-              console.log('Rendering IssuesList with:', {
-                mainIssue: { url: creationResult.mainIssueUrl || '' },
-                subtaskIssues: (creationResult.subtaskIssueUrls || []).map(url => ({ url }))
-              });
-              return null;
-            })()}
             <IssuesList
               mainIssue={{ url: creationResult.mainIssueUrl || '' }}
               subtaskIssues={(creationResult.subtaskIssueUrls || []).map(url => ({ url }))}

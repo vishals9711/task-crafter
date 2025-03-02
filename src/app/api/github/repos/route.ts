@@ -33,11 +33,9 @@ export async function GET() {
         if (!reposResponse.ok) {
             throw new Error('Failed to fetch repositories');
         }
-        console.log('Repositories fetched successfully');
 
         const reposData = await reposResponse.json() as GitHubRepo[];
 
-        console.log('Repositories data:', reposData);
         // Format the repositories data
         const repos = reposData.map((repo) => ({
             name: repo.name,

@@ -12,7 +12,6 @@ interface IssuesListProps {
 }
 
 export default function IssuesList({ mainIssue, subtaskIssues }: IssuesListProps) {
-  console.log('IssuesList rendering with:', { mainIssue, subtaskIssues });
 
   return (
     <div className="space-y-6 p-6">

@@ -12,7 +12,6 @@ export const useTaskExtraction = () => {
     const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setInputText(e.target.value);
         // Reset creation result when input changes
-        console.log('Resetting creation result');
         setCreationResult(null);
     };
 
@@ -60,7 +59,6 @@ export const useTaskExtraction = () => {
         setIsProcessing(true);
         setExtractedTasks(null);
         // Also reset creation result when extracting new tasks
-        console.log('Resetting creation result before task extraction');
         setCreationResult(null);
 
         try {

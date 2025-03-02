@@ -37,7 +37,6 @@ export const useGitHubIssues = (setCreationResult: (result: GitHubIssueCreationR
                 mainIssueUrl: mockGitHubIssueCreationResponses.mainIssue.html_url,
                 subtaskIssueUrls: subtaskUrls,
             };
-            console.log('Development mode - Mock result:', result);
             return result;
         }
 
@@ -224,12 +223,9 @@ export const useGitHubIssues = (setCreationResult: (result: GitHubIssueCreationR
         }
 
         setIsCreatingIssues(true);
-        console.log('Starting issue creation...');
 
         try {
-            console.log('Creating issues with task:', extractedTasks.mainTask);
             const result = await createGitHubIssues(extractedTasks.mainTask, credentials);
-            console.log('Issue creation result:', result);
 
             if (result.success) {
                 setCreationResult(result);
