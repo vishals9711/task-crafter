@@ -1,28 +1,64 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Octokit } from 'octokit';
 import { GitHubCredentials, GitHubIssueCreationResult, Task } from '@/types/task';
+import { cookies } from 'next/headers';
 
 export async function POST(request: NextRequest) {
     try {
-        const { task, credentials }: { task: Task; credentials: GitHubCredentials } = await request.json();
+        const { task, credentials, useOAuth = false }: {
+            task: Task;
+            credentials: GitHubCredentials;
+            useOAuth?: boolean;
+        } = await request.json();
 
-        if (!task || !credentials) {
+        if (!task) {
             return NextResponse.json(
-                { error: 'Task and GitHub credentials are required' },
+                { error: 'Task is required' },
                 { status: 400 }
             );
         }
 
-        const { token, owner, repo } = credentials;
+        let finalCredentials = credentials;
 
-        if (!token || !owner || !repo) {
-            return NextResponse.json(
-                { error: 'GitHub token, owner, and repo are required' },
-                { status: 400 }
-            );
+        // If using OAuth, get the token from cookies
+        if (useOAuth) {
+            const cookieStore = cookies();
+            const githubToken = cookieStore.get('github_token')?.value;
+
+            if (!githubToken) {
+                return NextResponse.json(
+                    { error: 'Not authenticated with GitHub' },
+                    { status: 401 }
+                );
+            }
+
+            const { owner, repo } = credentials;
+
+            if (!owner || !repo) {
+                return NextResponse.json(
+                    { error: 'GitHub owner and repo are required' },
+                    { status: 400 }
+                );
+            }
+
+            finalCredentials = {
+                token: githubToken,
+                owner,
+                repo
+            };
+        } else {
+            // Using manual credentials
+            const { token, owner, repo } = credentials;
+
+            if (!token || !owner || !repo) {
+                return NextResponse.json(
+                    { error: 'GitHub token, owner, and repo are required' },
+                    { status: 400 }
+                );
+            }
         }
 
-        const result = await createGitHubIssues(task, credentials);
+        const result = await createGitHubIssues(task, finalCredentials);
 
         return NextResponse.json(result);
     } catch (error) {

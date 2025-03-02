@@ -1,36 +1,101 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Task Crafter
+
+Task Crafter is a tool that extracts tasks and subtasks from free-form text and allows you to create GitHub issues from them.
+
+## Features
+
+- Extract tasks and subtasks from free-form text
+- Generate markdown for tasks and subtasks
+- Create GitHub issues directly from extracted tasks
+- GitHub OAuth integration for repository selection
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- Node.js 18+ or 20+
+- pnpm (recommended) or npm
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Installation
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. Clone the repository:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+   ```bash
+   git clone https://github.com/yourusername/task_crafter.git
+   cd task_crafter
+   ```
 
-## Learn More
+2. Install dependencies:
 
-To learn more about Next.js, take a look at the following resources:
+   ```bash
+   pnpm install
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+3. Create a `.env.local` file in the root directory with the following variables:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+   ```
+   # OpenAI API Key (for task extraction)
+   OPENAI_API_KEY=your_openai_api_key
 
-## Deploy on Vercel
+   # GitHub OAuth credentials
+   # Get these from https://github.com/settings/developers
+   GITHUB_CLIENT_ID=your_github_client_id
+   GITHUB_CLIENT_SECRET=your_github_client_secret
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+   # Client-side accessible environment variables
+   NEXT_PUBLIC_GITHUB_CLIENT_ID=your_github_client_id
+   NEXT_PUBLIC_APP_URL=http://localhost:3000
+   ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+4. Start the development server:
+
+   ```bash
+   pnpm dev
+   ```
+
+5. Open [http://localhost:3000/task-extractor](http://localhost:3000/task-extractor) in your browser.
+
+## Setting Up GitHub OAuth
+
+1. Go to [GitHub Developer Settings](https://github.com/settings/developers)
+2. Click on "New OAuth App"
+3. Fill in the application details:
+   - Application name: Task Crafter
+   - Homepage URL: <http://localhost:3000>
+   - Authorization callback URL: <http://localhost:3000/github-callback>
+4. Click "Register application"
+5. Copy the Client ID and generate a Client Secret
+6. Add these to your `.env.local` file
+
+## Usage
+
+### Option 1: Login with GitHub first (recommended)
+
+1. Click the "Login with GitHub" button at the top of the page
+2. Authorize the application to access your GitHub account
+3. Select a repository from the dropdown
+4. Enter your free-form text in the input field
+5. Click "Extract Tasks" to generate tasks and subtasks
+6. Review and select the subtasks you want to include
+7. Click "Create GitHub Issues" to create issues in the selected repository
+
+### Option 2: Extract tasks first, then create GitHub issues
+
+1. Enter your free-form text in the input field
+2. Click "Extract Tasks" to generate tasks and subtasks
+3. Review and select the subtasks you want to include
+4. Click "Create GitHub Issues"
+5. Either:
+   - Enter your GitHub credentials manually, or
+   - Click the "GitHub Login" tab and login with GitHub
+
+### Option 3: Just get the markdown
+
+1. Enter your free-form text in the input field
+2. Click "Extract Tasks" to generate tasks and subtasks
+3. Review and select the subtasks you want to include
+4. Use the "Copy" button to copy the generated markdown
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
