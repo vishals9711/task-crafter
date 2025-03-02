@@ -1,6 +1,12 @@
-import { useState, useEffect } from 'react';
-import { decryptToken } from '@/lib/tokenEncryption';
+import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
+import { useSession } from 'next-auth/react';
+import { Session } from 'next-auth';
+
+// Extend the Session type to include accessToken
+interface ExtendedSession extends Session {
+    accessToken?: string;
+}
 
 interface Repository {
     name: string;
@@ -19,25 +25,19 @@ interface GitHubRepoResponse {
 }
 
 export const useRepositories = (isGitHubLoggedIn: boolean) => {
+    const { data: session } = useSession();
+    const accessToken = (session as ExtendedSession)?.accessToken;
     const [userRepos, setUserRepos] = useState<Repository[]>([]);
     const [selectedRepo, setSelectedRepo] = useState('');
     const [open, setOpen] = useState(false);
 
-    useEffect(() => {
-        if (isGitHubLoggedIn) {
-            fetchUserRepos();
-        }
-    }, [isGitHubLoggedIn]);
-
-    const fetchUserRepos = async () => {
+    const fetchUserRepos = useCallback(async () => {
         try {
-            const encryptedToken = localStorage.getItem('github_token');
-            if (!encryptedToken) return;
+            if (!accessToken) return;
 
-            const token = await decryptToken(encryptedToken);
             const response = await fetch('https://api.github.com/user/repos?sort=updated&per_page=100', {
                 headers: {
-                    'Authorization': `Bearer ${token}`,
+                    'Authorization': `Bearer ${accessToken}`,
                     'Accept': 'application/vnd.github.v3+json',
                 },
             });
@@ -57,16 +57,22 @@ export const useRepositories = (isGitHubLoggedIn: boolean) => {
         } catch (error) {
             console.error('Error fetching repositories:', error);
         }
-    };
+    }, [accessToken]);
 
-    const handleRepoSelect = (value: string) => {
+    useEffect(() => {
+        if (isGitHubLoggedIn && accessToken) {
+            fetchUserRepos();
+        }
+    }, [isGitHubLoggedIn, accessToken, fetchUserRepos]);
+
+    const handleRepoSelect = useCallback((value: string) => {
         if (!value || value === selectedRepo) {
             setSelectedRepo('');
             return;
         }
         setSelectedRepo(value);
         setOpen(false);
-    };
+    }, [selectedRepo]);
 
     return {
         userRepos,

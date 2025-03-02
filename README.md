@@ -61,11 +61,77 @@ Task Crafter is a tool that extracts tasks and subtasks from free-form text and 
 2. Click on "New OAuth App"
 3. Fill in the application details:
    - Application name: Task Crafter
-   - Homepage URL: <http://localhost:3000>
-   - Authorization callback URL: <http://localhost:3000/github-callback>
+   - Homepage URL: `http://localhost:3000`
+   - Authorization callback URL: `http://localhost:3000/api/auth/callback/github`
+
+   > ⚠️ **IMPORTANT**: The callback URL must exactly match the URL where NextAuth.js will handle the OAuth callback.
+   > This URL is constructed from your NEXTAUTH_URL environment variable + `/api/auth/callback/github`.
+   > If you're using a custom domain or tunneling service (like ngrok or zrok), make sure to update this URL accordingly.
+
 4. Click "Register application"
 5. Copy the Client ID and generate a Client Secret
-6. Add these to your `.env.local` file
+6. Add these to your `.env.local` file:
+
+   ```
+   GITHUB_CLIENT_ID=your_github_client_id
+   GITHUB_CLIENT_SECRET=your_github_client_secret
+   NEXTAUTH_URL=http://localhost:3000
+   NEXTAUTH_SECRET=your_random_secret_key
+   ```
+
+7. For the `NEXTAUTH_SECRET`, you can generate a random string using:
+
+   ```bash
+   openssl rand -base64 32
+   ```
+
+8. For production deployment, update the callback URL in GitHub OAuth settings to your production URL.
+
+### Required Scopes
+
+Task Crafter requests the following GitHub scopes:
+
+- `read:user`: Read-only access to user profile data
+- `user:email`: Access to user email addresses
+- `repo`: Full control of private repositories (needed to create issues)
+
+You can modify these scopes in `src/app/api/auth/options.ts` if you need different permissions.
+
+## Troubleshooting GitHub OAuth
+
+### Common Issues
+
+#### "The redirect_uri is not associated with this application"
+
+This error occurs when the callback URL in your authorization request doesn't match what's registered in your GitHub OAuth app settings.
+
+**Solution:**
+
+1. Go to your [GitHub OAuth App settings](https://github.com/settings/developers)
+2. Find your Task Crafter application
+3. Verify that the "Authorization callback URL" exactly matches where your app is running:
+   - For local development: `http://localhost:3000/api/auth/callback/github`
+   - For production: `https://your-domain.com/api/auth/callback/github`
+4. If you're using a tunneling service (ngrok, zrok, etc.), update the callback URL to match your temporary URL
+
+#### "The client_id specified is incorrect"
+
+This error occurs when the client ID in your request doesn't match any registered GitHub OAuth apps.
+
+**Solution:**
+
+1. Check your `.env.local` file and ensure `GITHUB_CLIENT_ID` matches the Client ID in your GitHub OAuth App settings
+2. Restart your development server after updating environment variables
+
+#### "Not Found" after authentication
+
+This error occurs when NextAuth.js can't handle the callback properly.
+
+**Solution:**
+
+1. Ensure your `NEXTAUTH_URL` environment variable is set correctly
+2. Check that your Next.js API routes are properly set up
+3. Verify that the `/api/auth/[...nextauth]/route.ts` file exists and is correctly configured
 
 ## Usage
 

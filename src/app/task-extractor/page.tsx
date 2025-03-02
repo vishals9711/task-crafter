@@ -15,7 +15,7 @@ import IssuesList from '@/components/IssuesList';
 export default function TaskExtractor() {
   
   // Custom hooks
-  const { isGitHubLoggedIn, handleGitHubLogin, handleGitHubLogout } = useGitHubAuth();
+  const { isGitHubLoggedIn, handleGitHubLogin } = useGitHubAuth();
   const { userRepos, selectedRepo, open, setOpen, handleRepoSelect } = useRepositories(isGitHubLoggedIn);
   const {
     userProjects,
@@ -80,7 +80,6 @@ export default function TaskExtractor() {
                 setOpen={setOpen}
                 handleRepoSelect={handleRepoSelect}
                 handleGitHubLogin={handleGitHubLogin}
-                handleGitHubLogout={handleGitHubLogout}
                 isProjectsEnabled={isProjectsEnabled}
                 userProjects={userProjects}
                 selectedProject={selectedProject}
