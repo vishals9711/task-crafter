@@ -94,8 +94,8 @@ export function TaskOutput({
                 </div>
               </div>
 
-              {/* Always show Markdown section regardless of login status */}
-              {markdownText && (
+              {/* Show Markdown section if not logged in */}
+              {markdownText && !isGitHubLoggedIn && (
                 <div className="mt-4">
                   <div className="flex justify-between items-center mb-2">
                     <h3 className="text-lg font-semibold text-white/90">Markdown</h3>

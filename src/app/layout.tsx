@@ -2,20 +2,32 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Link from "next/link";
-import ClientNavigation from "@/components/ClientNavigation";
 import { Providers } from "./providers";
 import { Logo } from "@/components/Logo";
-import { SpeedInsights } from "@vercel/speed-insights/next"
-import { Analytics } from "@vercel/analytics/react"
+import { ClientNavigationWrapper } from "@/components/ClientNavigationWrapper";
+import dynamic from 'next/dynamic';
 
+// Dynamically import analytics components
+const SpeedInsights = dynamic(() => import('@vercel/speed-insights/next').then(mod => mod.SpeedInsights), {
+  loading: () => null,
+});
+const Analytics = dynamic(() => import('@vercel/analytics/react').then(mod => mod.Analytics), {
+  loading: () => null,
+});
+
+// Optimize font loading
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
+  display: "swap",
+  preload: true,
 });
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+  display: "swap",
+  preload: true,
 });
 
 export const viewport = {
@@ -77,18 +89,20 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+    <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
+      <body className="antialiased">
         <Providers>
-          <header className="border-b border-white/10 backdrop-blur-sm bg-white/5 dark:bg-black/5">
-            <div className="container mx-auto py-4 px-4 flex items-center justify-between">
-              <Link href="/" className="flex items-center gap-2 text-xl font-bold">
+          <header className="sticky top-0 z-50 border-b border-white/10 backdrop-blur-sm bg-white/5 dark:bg-black/5">
+            <div className="container mx-auto py-3 px-4 flex items-center justify-between">
+              <Link 
+                href="/" 
+                className="flex items-center gap-2 text-xl font-bold"
+                prefetch={true}
+              >
                 <Logo className="w-6 h-6" />
-                Task Crafter
+                <span className="inline-block">Task Crafter</span>
               </Link>
-              <ClientNavigation />
+              <ClientNavigationWrapper />
             </div>
           </header>
           <main>

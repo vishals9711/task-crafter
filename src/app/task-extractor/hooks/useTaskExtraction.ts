@@ -62,57 +62,6 @@ export const useTaskExtraction = () => {
         setCreationResult(null);
 
         try {
-            if (process.env.NODE_ENV === 'development') {
-                await new Promise(resolve => setTimeout(resolve, 800));
-
-                if (!inputText.trim()) {
-                    const mockError: ExtractedTasks = {
-                        success: false,
-                        error: 'Please provide more detailed text to extract meaningful tasks.',
-                        mainTask: {
-                            id: '0',
-                            title: '',
-                            description: '',
-                            subtasks: []
-                        }
-                    };
-                    setExtractedTasks(mockError);
-                    return;
-                }
-
-                const mockData: ExtractedTasks = {
-                    success: true,
-                    mainTask: {
-                        id: '1',
-                        title: 'Node.js Environment Setup',
-                        description: '## Environment Setup Issue\n\n### Current Behavior\nNode.js environment configuration needs to be set up for development.\n\n### Expected Behavior\n- Node.js version specified\n- Development dependencies installed\n- Environment variables configured\n\n### Tasks\n- [ ] Set up .nvmrc file\n- [ ] Configure development scripts\n- [ ] Document environment setup process',
-                        subtasks: [
-                            {
-                                id: 'subtask-1',
-                                title: 'Set up .nvmrc file',
-                                description: 'Create and configure .nvmrc file with the appropriate Node.js version',
-                                selected: true
-                            },
-                            {
-                                id: 'subtask-2',
-                                title: 'Configure development scripts',
-                                description: 'Set up necessary npm scripts for development environment',
-                                selected: true
-                            },
-                            {
-                                id: 'subtask-3',
-                                title: 'Document environment setup',
-                                description: 'Create documentation for environment setup process',
-                                selected: true
-                            }
-                        ]
-                    }
-                };
-
-                setExtractedTasks(mockData);
-                generateMarkdown(mockData.mainTask);
-                return;
-            }
 
             const response = await fetch('/api/extract-tasks', {
                 method: 'POST',
