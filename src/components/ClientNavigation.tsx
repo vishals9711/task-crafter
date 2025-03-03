@@ -19,11 +19,13 @@ export default function ClientNavigation() {
             <Link href="/" className="hover:text-blue-500 transition-colors">Home</Link>
           </li>
         )}
-        <li>
-          <Link href="/task-extractor" className="hover:text-blue-500 transition-colors">
-            Task Extractor
+        {isHome && (
+          <li>
+            <Link href="/task-extractor" className="hover:text-blue-500 transition-colors">
+              Task Extractor
           </Link>
         </li>
+        )}
         {isLoading ? (
           <li>
             <Button variant="ghost" disabled>
