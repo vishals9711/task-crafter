@@ -33,7 +33,7 @@ Task Crafter is a tool that extracts tasks and subtasks from free-form text and 
 
 3. Create a `.env.local` file in the root directory with the following variables:
 
-   ```
+   ```bash
    # OpenAI API Key (for task extraction)
    OPENAI_API_KEY=your_openai_api_key
 
@@ -72,7 +72,7 @@ Task Crafter is a tool that extracts tasks and subtasks from free-form text and 
 5. Copy the Client ID and generate a Client Secret
 6. Add these to your `.env.local` file:
 
-   ```
+   ```bash
    GITHUB_CLIENT_ID=your_github_client_id
    GITHUB_CLIENT_SECRET=your_github_client_secret
    NEXTAUTH_URL=http://localhost:3000

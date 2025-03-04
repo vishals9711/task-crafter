@@ -1,108 +1,63 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { v4 as uuidv4 } from 'uuid';
 import { ExtractedTasks, Task } from '@/types/task';
-import OpenAI from 'openai';
+import { generateObject } from 'ai';
+import { openai } from '@ai-sdk/openai';
+import { z } from 'zod';
 
-// Initialize OpenAI client
-const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
+// Increase the timeout for this API route
+export const runtime = 'edge'; // Use Edge runtime for better performance
+export const maxDuration = 120; // Set maximum duration to 120 seconds (2 minutes)
+
+// Define the schema for the task extraction response
+const taskResponseSchema = z.object({
+    mainTask: z.object({
+        title: z.string(),
+        description: z.string(),
+    }),
+    subtasks: z.array(
+        z.object({
+            title: z.string(),
+            description: z.string(),
+        })
+    ),
 });
 
-// Define interfaces for OpenAI response structure
-interface OpenAISubtask {
-    title: string;
-    description: string;
-}
+const taskExtractionPrompt = `
+You are a task extraction assistant. Your goal is to break down a high-level task into a small set of clear, actionable steps.
 
-interface OpenAITaskResponse {
-    mainTask: {
-        title: string;
-        description: string;
-    };
-    subtasks: OpenAISubtask[];
-}
+Instructions:
+1. Identify the core task from the input.
+2. Extract **only the essential** steps required to complete the task.
+3. Limit the output to **3-5 key subtasks**.
+4. Keep descriptions **brief** (1-2 sentences per subtask) and **action-oriented**.
+5. Order subtasks logically, highlighting dependencies if any.
 
-// Task extraction prompt
-const taskExtractionPrompt = `You are a task extraction assistant specialized in breaking down complex tasks into manageable components.
-
-Your job is to:
-1. Identify the main overarching task or project from the provided text
-2. Extract logical subtasks that would help complete the main task
-3. Ensure each subtask is specific, actionable, and clearly defined
-4. Organize subtasks in a logical sequence of implementation
-5. Provide concise but descriptive titles and detailed descriptions
-
-When analyzing the text:
-- Focus on actionable items and deliverables
-- Identify dependencies between subtasks
-- Estimate appropriate granularity (not too broad, not too specific)
-- Ensure all critical aspects of the main task are covered by subtasks`;
-
-// Output structure specification
-const outputStructurePrompt = `Format your response as a valid JSON object with the following structure:
-{
-    "mainTask": {
-        "title": "Clear, concise title of the main task",
-        "description": "Detailed description of what needs to be accomplished"
-    },
-    "subtasks": [
-        {
-            "title": "Specific, actionable subtask title",
-            "description": "Detailed description of the subtask with any relevant details"
-        },
-        ...
-    ]
-}`;
+Focus on:
+- Actionable outcomes, not technical implementation.
+- Avoid overly granular or repetitive steps.
+- Cover the entire task without unnecessary detail.
+`;
 
 async function processWithLLM(text: string): Promise<ExtractedTasks> {
     try {
-        // Call OpenAI API to extract structured task information
-        const response = await openai.chat.completions.create({
-            model: "gpt-4o",
-            messages: [
-                {
-                    role: "system",
-                    content: `${taskExtractionPrompt}\n\n${outputStructurePrompt}`
-                },
-                {
-                    role: "user",
-                    content: text
-                }
-            ],
-            response_format: { type: "json_object" },
-            temperature: 0.3,
-            max_tokens: 2000
+
+        const result = await generateObject({
+            model: openai('gpt-4o-mini'),
+            schema: taskResponseSchema,
+            schemaName: 'TaskExtraction',
+            schemaDescription: 'Extract a main task and subtasks from the input text',
+            system: taskExtractionPrompt,
+            prompt: text,
+            temperature: 0,
+            maxTokens: 500, // Reduced token limit for faster responses
+            mode: 'json', // Explicitly use JSON mode for faster processing
         });
 
-        // Parse the response
-        const content = response.choices[0]?.message?.content;
-        if (!content) {
-            throw new Error("No content returned from OpenAI");
-        }
+        const parsedContent = result.object;
 
-        let parsedContent: OpenAITaskResponse;
-        try {
-            parsedContent = JSON.parse(content) as OpenAITaskResponse;
 
-            // Validate the parsed content
-            if (!parsedContent.mainTask || !parsedContent.subtasks) {
-                throw new Error("Invalid response structure: missing mainTask or subtasks");
-            }
-
-            if (!parsedContent.mainTask.title || !parsedContent.mainTask.description) {
-                throw new Error("Invalid mainTask: missing title or description");
-            }
-
-            if (!Array.isArray(parsedContent.subtasks)) {
-                throw new Error("Invalid subtasks: not an array");
-            }
-        } catch (parseError) {
-            console.error('Error parsing OpenAI response:', parseError, content);
-            throw new Error(`Failed to parse OpenAI response: ${parseError instanceof Error ? parseError.message : 'Unknown error'}`);
-        }
-
-        // Map the parsed content to our expected structure
-        const subtasks = parsedContent.subtasks.map((subtask: OpenAISubtask) => {
+        const subtasks = parsedContent.subtasks.map((subtask) => {
             if (!subtask.title || !subtask.description) {
                 console.warn('Subtask missing title or description, using defaults');
                 return {
@@ -152,7 +107,7 @@ async function processWithLLM(text: string): Promise<ExtractedTasks> {
                 subtasks: [],
             },
             success: false,
-            error: 'Failed to process text with OpenAI. Please try again.',
+            error: error instanceof Error ? error.message : 'Failed to process text with OpenAI. Please try again.',
         };
     }
 }
