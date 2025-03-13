@@ -8,6 +8,18 @@ Task Crafter is a tool that extracts tasks and subtasks from free-form text and 
 - Generate markdown for tasks and subtasks
 - Create GitHub issues directly from extracted tasks
 - GitHub OAuth integration for repository selection
+- Organization selection for repositories
+- Enhanced GitHub authentication flow with automatic refresh
+- Usage limit monitoring and notifications
+
+## Recent Updates
+
+### March 2025
+
+- **Usage Limit Feature**: Implemented usage tracking and limit notifications to help users monitor their API consumption
+- **Enhanced GitHub Authentication**: Improved authentication flow with automatic token refresh and reauthentication prompts
+- **Organization Support**: Added ability to select and filter repositories by organization
+- **Repository Access Improvements**: Enhanced repository selection with better filtering and sorting options
 
 ## Getting Started
 
@@ -135,17 +147,37 @@ This error occurs when NextAuth.js can't handle the callback properly.
 
 ## Usage
 
-### Option 1: Login with GitHub first (recommended)
+### Organization and Repository Selection
+
+1. After logging in with GitHub, you can select an organization from the dropdown menu
+2. Filter repositories by organization or view all your accessible repositories
+3. Use the search field to quickly find specific repositories
+
+### Authentication Refreshing
+
+The application now automatically detects when your GitHub authentication token needs refreshing and will prompt you to reauthenticate when necessary.
+
+### Usage Monitoring
+
+Task Crafter now includes usage monitoring to help you keep track of your API consumption:
+
+- A usage banner displays your current usage status
+- Notifications appear when you're approaching your usage limits
+- Clear feedback is provided when limits are reached
+
+### Task Extraction Workflow
+
+#### Option 1: Login with GitHub first (recommended)
 
 1. Click the "Login with GitHub" button at the top of the page
 2. Authorize the application to access your GitHub account
-3. Select a repository from the dropdown
+3. Select an organization (optional) and repository from the dropdown
 4. Enter your free-form text in the input field
 5. Click "Extract Tasks" to generate tasks and subtasks
 6. Review and select the subtasks you want to include
 7. Click "Create GitHub Issues" to create issues in the selected repository
 
-### Option 2: Extract tasks first, then create GitHub issues
+#### Option 2: Extract tasks first, then create GitHub issues
 
 1. Enter your free-form text in the input field
 2. Click "Extract Tasks" to generate tasks and subtasks
@@ -155,7 +187,7 @@ This error occurs when NextAuth.js can't handle the callback properly.
    - Enter your GitHub credentials manually, or
    - Click the "GitHub Login" tab and login with GitHub
 
-### Option 3: Just get the markdown
+#### Option 3: Just get the markdown
 
 1. Enter your free-form text in the input field
 2. Click "Extract Tasks" to generate tasks and subtasks
