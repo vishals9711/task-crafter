@@ -2,7 +2,11 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 import { DetailLevel, ExtractedTasks, GitHubIssueCreationResult } from '@/types/task';
 
-export const useTaskExtraction = () => {
+export const useTaskExtraction = (
+    isAuthenticated: boolean = false,
+    hasReachedLimit: boolean = false,
+    incrementUsage?: () => void
+) => {
     const [inputText, setInputText] = useState('');
     const [extractedTasks, setExtractedTasks] = useState<ExtractedTasks | null>(null);
     const [isProcessing, setIsProcessing] = useState(false);
@@ -63,6 +67,12 @@ export const useTaskExtraction = () => {
             return;
         }
 
+        // Check if user has reached usage limit and is not authenticated
+        if (!isAuthenticated && hasReachedLimit) {
+            toast.error('You have reached the maximum number of free extractions. Please login with GitHub to continue.');
+            return;
+        }
+
         setIsProcessing(true);
         setExtractedTasks(null);
         // Also reset creation result when extracting new tasks
@@ -89,6 +99,11 @@ export const useTaskExtraction = () => {
 
             if (data.success) {
                 generateMarkdown(data.mainTask);
+
+                // Increment usage count if user is not authenticated
+                if (!isAuthenticated && incrementUsage) {
+                    incrementUsage();
+                }
             } else {
                 toast.error(data.error || 'Failed to extract tasks');
             }
@@ -101,13 +116,13 @@ export const useTaskExtraction = () => {
     };
 
     const copyMarkdownToClipboard = () => {
+        if (!markdownText) return;
+
         navigator.clipboard.writeText(markdownText)
-            .then(() => {
-                toast.success('Markdown copied to clipboard');
-            })
+            .then(() => toast.success('Markdown copied to clipboard'))
             .catch((error) => {
-                console.error('Error copying to clipboard:', error);
-                toast.error('Failed to copy to clipboard');
+                console.error('Error copying markdown:', error);
+                toast.error('Failed to copy markdown to clipboard');
             });
     };
 

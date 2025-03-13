@@ -35,6 +35,7 @@ interface TaskInputProps {
   onInputChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
   onDetailLevelChange: (level: DetailLevel) => void;
   onExtractTasks: () => void;
+  disabled?: boolean;
 }
 
 export function TaskInput({ 
@@ -64,7 +65,8 @@ export function TaskInput({
   reauthenticateWithRepoSelection,
   onInputChange, 
   onDetailLevelChange,
-  onExtractTasks 
+  onExtractTasks,
+  disabled = false
 }: TaskInputProps) {
   return (
     <motion.div
@@ -124,11 +126,12 @@ export function TaskInput({
         </CardContent>
         <CardFooter className="pt-2">
           <Button 
-            onClick={onExtractTasks} 
-            disabled={isProcessing || !inputText.trim()}
+            variant="default" 
             className="w-full bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 transition-all duration-300"
+            onClick={onExtractTasks}
+            disabled={isProcessing || !inputText.trim() || disabled}
           >
-            {isProcessing ? 'Processing...' : 'Extract Tasks'}
+            {isProcessing ? 'Extracting...' : 'Extract Tasks'}
           </Button>
         </CardFooter>
       </Card>
