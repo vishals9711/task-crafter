@@ -5,13 +5,7 @@ import { motion } from 'framer-motion';
 import { DetailLevel, GitHubProject } from '@/types/task';
 import { DetailLevelSelector } from './DetailLevelSelector';
 import { RepositorySelector } from './RepositorySelector';
-
-interface Repository {
-  name: string;
-  owner: string;
-  fullName: string;
-  private: boolean;
-}
+import { Organization, Repository } from '../hooks/useRepositories';
 
 interface TaskInputProps {
   inputText: string;
@@ -19,16 +13,23 @@ interface TaskInputProps {
   detailLevel: DetailLevel;
   isGitHubLoggedIn: boolean;
   userRepos: Repository[];
+  organizations: Organization[];
   selectedRepo: string;
+  selectedOrg: string | null;
   open: boolean;
+  orgSelectorOpen: boolean;
   setOpen: (open: boolean) => void;
+  setOrgSelectorOpen: (open: boolean) => void;
   handleRepoSelect: (value: string) => void;
+  handleOrgSelect: (orgLogin: string | null) => void;
   isProjectsEnabled: boolean;
   userProjects: GitHubProject[];
   selectedProject: GitHubProject | null;
   projectSelectorOpen: boolean;
   setProjectSelectorOpen: (open: boolean) => void;
   handleProjectSelect: (projectId: string) => void;
+  isLoading: boolean;
+  refreshRepositories: () => void;
   onInputChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
   onDetailLevelChange: (level: DetailLevel) => void;
   onExtractTasks: () => void;
@@ -40,16 +41,23 @@ export function TaskInput({
   detailLevel,
   isGitHubLoggedIn,
   userRepos,
+  organizations,
   selectedRepo,
+  selectedOrg,
   open,
+  orgSelectorOpen,
   setOpen,
+  setOrgSelectorOpen,
   handleRepoSelect,
+  handleOrgSelect,
   isProjectsEnabled,
   userProjects,
   selectedProject,
   projectSelectorOpen,
   setProjectSelectorOpen,
   handleProjectSelect,
+  isLoading,
+  refreshRepositories,
   onInputChange, 
   onDetailLevelChange,
   onExtractTasks 
@@ -81,16 +89,23 @@ export function TaskInput({
             <RepositorySelector
               isGitHubLoggedIn={isGitHubLoggedIn}
               userRepos={userRepos}
+              organizations={organizations}
               selectedRepo={selectedRepo}
+              selectedOrg={selectedOrg}
               open={open}
+              orgSelectorOpen={orgSelectorOpen}
               setOpen={setOpen}
+              setOrgSelectorOpen={setOrgSelectorOpen}
               handleRepoSelect={handleRepoSelect}
+              handleOrgSelect={handleOrgSelect}
               isProjectsEnabled={isProjectsEnabled}
               userProjects={userProjects}
               selectedProject={selectedProject}
               projectSelectorOpen={projectSelectorOpen}
               setProjectSelectorOpen={setProjectSelectorOpen}
               handleProjectSelect={handleProjectSelect}
+              isLoading={isLoading}
+              refreshRepositories={refreshRepositories}
             />
           )}
           

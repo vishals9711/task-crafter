@@ -21,7 +21,20 @@ export default function TaskExtractor() {
   
   // Custom hooks
   const { isGitHubLoggedIn } = useGitHubAuth();
-  const { userRepos, selectedRepo, open, setOpen, handleRepoSelect } = useRepositories(isGitHubLoggedIn);
+  const { 
+    userRepos, 
+    organizations,
+    selectedRepo, 
+    selectedOrg,
+    open, 
+    orgSelectorOpen,
+    setOpen, 
+    setOrgSelectorOpen,
+    handleRepoSelect,
+    handleOrgSelect,
+    isLoading,
+    refreshRepositories
+  } = useRepositories(isGitHubLoggedIn);
   const {
     userProjects,
     selectedProject,
@@ -136,16 +149,23 @@ export default function TaskExtractor() {
               detailLevel={detailLevel}
               isGitHubLoggedIn={isGitHubLoggedIn}
               userRepos={userRepos}
+              organizations={organizations}
               selectedRepo={selectedRepo}
+              selectedOrg={selectedOrg}
               open={open}
+              orgSelectorOpen={orgSelectorOpen}
               setOpen={setOpen}
+              setOrgSelectorOpen={setOrgSelectorOpen}
               handleRepoSelect={handleRepoSelect}
+              handleOrgSelect={handleOrgSelect}
               isProjectsEnabled={isProjectsEnabled}
               userProjects={userProjects}
               selectedProject={selectedProject}
               projectSelectorOpen={projectSelectorOpen}
               setProjectSelectorOpen={setProjectSelectorOpen}
               handleProjectSelect={handleProjectSelect}
+              isLoading={isLoading}
+              refreshRepositories={refreshRepositories}
               onInputChange={handleInputChange}
               onDetailLevelChange={handleDetailLevelChange}
               onExtractTasks={handleExtractTasks}

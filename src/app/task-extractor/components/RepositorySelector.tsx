@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { Check, ChevronsUpDown, FolderGit2, GitBranch } from 'lucide-react';
+import { Check, ChevronsUpDown, FolderGit2, GitBranch, RefreshCw } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import {
   Command,
@@ -16,42 +16,51 @@ import {
 } from "@/components/ui/popover";
 import { GitHubProject } from '@/types/task';
 import { motion } from 'framer-motion';
-
-interface Repository {
-  name: string;
-  owner: string;
-  fullName: string;
-  private: boolean;
-}
+import { Organization, Repository } from '../hooks/useRepositories';
+import { OrganizationSelector } from './OrganizationSelector';
 
 interface RepositorySelectorProps {
   isGitHubLoggedIn: boolean;
   userRepos: Repository[];
+  organizations: Organization[];
   selectedRepo: string;
+  selectedOrg: string | null;
   open: boolean;
+  orgSelectorOpen: boolean;
   setOpen: (open: boolean) => void;
+  setOrgSelectorOpen: (open: boolean) => void;
   handleRepoSelect: (value: string) => void;
+  handleOrgSelect: (orgLogin: string | null) => void;
   isProjectsEnabled: boolean;
   userProjects: GitHubProject[];
   selectedProject: GitHubProject | null;
   projectSelectorOpen: boolean;
   setProjectSelectorOpen: (open: boolean) => void;
   handleProjectSelect: (projectId: string) => void;
+  isLoading: boolean;
+  refreshRepositories: () => void;
 }
 
 export function RepositorySelector({
   isGitHubLoggedIn,
   userRepos,
+  organizations,
   selectedRepo,
+  selectedOrg,
   open,
+  orgSelectorOpen,
   setOpen,
+  setOrgSelectorOpen,
   handleRepoSelect,
+  handleOrgSelect,
   isProjectsEnabled,
   userProjects,
   selectedProject,
   projectSelectorOpen,
   setProjectSelectorOpen,
   handleProjectSelect,
+  isLoading,
+  refreshRepositories
 }: RepositorySelectorProps) {
   if (!isGitHubLoggedIn) {
     return null;
@@ -88,16 +97,30 @@ export function RepositorySelector({
       
       <motion.div 
         variants={itemVariants}
-        className="mb-3 flex items-center"
+        className="mb-4 flex items-center"
       >
         <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-950/50 border border-green-400/30 mr-3">
           <FolderGit2 className="h-4 w-4 text-green-400" />
         </div>
         <span className="text-base font-medium text-white/90">
-          Select Target Repository
+          GitHub Repository Settings
         </span>
       </motion.div>
       
+      {/* Organization selector row */}
+      <div className="flex flex-col sm:flex-row gap-3 mb-4">
+        <OrganizationSelector 
+          organizations={organizations}
+          selectedOrg={selectedOrg}
+          orgSelectorOpen={orgSelectorOpen}
+          setOrgSelectorOpen={setOrgSelectorOpen}
+          handleOrgSelect={handleOrgSelect}
+          isLoading={isLoading}
+          refreshRepositories={refreshRepositories}
+        />
+      </div>
+      
+      {/* Repository selector row */}
       <div className="flex flex-col sm:flex-row gap-3">
         <motion.div variants={itemVariants} className="w-full sm:w-[280px]">
           <Popover open={open} onOpenChange={setOpen}>
@@ -113,6 +136,7 @@ export function RepositorySelector({
                     ? "bg-green-950/30 border-green-400/40 hover:bg-green-900/20 hover:border-green-400/60" 
                     : "bg-white/5 border-white/10 hover:bg-white/10"
                 )}
+                disabled={isLoading}
               >
                 {selectedRepo ? (
                   <div className="flex items-center">
@@ -123,10 +147,14 @@ export function RepositorySelector({
                   </div>
                 ) : (
                   <span className="truncate mr-2 max-w-[200px] text-white/70">
-                    Select repository...
+                    {isLoading ? 'Loading repositories...' : 'Select repository...'}
                   </span>
                 )}
-                <ChevronsUpDown className="h-5 w-5 shrink-0 opacity-50 flex-none text-white/70" />
+                {isLoading ? (
+                  <RefreshCw className="h-4 w-4 animate-spin text-white/70" />
+                ) : (
+                  <ChevronsUpDown className="h-5 w-5 shrink-0 opacity-50 flex-none text-white/70" />
+                )}
                 
                 {/* Gradient border effect on hover */}
                 <span className="absolute inset-x-0 -bottom-px h-px w-full bg-gradient-to-r from-transparent via-green-500/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -137,7 +165,12 @@ export function RepositorySelector({
                 <CommandInput placeholder="Search repositories..." className="text-base py-3 text-white/80 border-b border-white/10" />
                 <CommandList className="max-h-[300px]">
                   <CommandEmpty>
-                    <p className="py-4 text-center text-white/50">No repositories found.</p>
+                    <p className="py-4 text-center text-white/50">
+                      {userRepos.length === 0 
+                        ? 'No repositories found in this context' 
+                        : 'No matching repositories'
+                      }
+                    </p>
                   </CommandEmpty>
                   <CommandGroup>
                     {userRepos.map((repo) => (
@@ -186,6 +219,7 @@ export function RepositorySelector({
                       ? "bg-green-950/30 border-green-400/40 hover:bg-green-900/20 hover:border-green-400/60" 
                       : "bg-white/5 border-white/10 hover:bg-white/10"
                   )}
+                  disabled={isLoading || !selectedRepo}
                 >
                   {selectedProject ? (
                     <div className="flex items-center">
@@ -196,7 +230,11 @@ export function RepositorySelector({
                     </div>
                   ) : (
                     <span className="truncate mr-2 max-w-[200px] text-white/70">
-                      Select project...
+                      {!selectedRepo 
+                        ? 'Select repository first'
+                        : isLoading 
+                          ? 'Loading projects...' 
+                          : 'Select project (optional)'}
                     </span>
                   )}
                   <ChevronsUpDown className="h-5 w-5 shrink-0 opacity-50 flex-none text-white/70" />
@@ -242,6 +280,16 @@ export function RepositorySelector({
           </motion.div>
         )}
       </div>
+      
+      {/* Info text */}
+      {!selectedRepo && (
+        <motion.p 
+          variants={itemVariants} 
+          className="text-xs text-white/50 mt-3"
+        >
+          Select a repository to create issues directly in your GitHub account
+        </motion.p>
+      )}
     </motion.div>
   );
 } 
