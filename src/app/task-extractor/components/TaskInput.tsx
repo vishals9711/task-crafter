@@ -30,6 +30,8 @@ interface TaskInputProps {
   handleProjectSelect: (projectId: string) => void;
   isLoading: boolean;
   refreshRepositories: () => void;
+  refreshGitHubAuth: () => void;
+  reauthenticateWithRepoSelection?: () => void;
   onInputChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
   onDetailLevelChange: (level: DetailLevel) => void;
   onExtractTasks: () => void;
@@ -58,6 +60,8 @@ export function TaskInput({
   handleProjectSelect,
   isLoading,
   refreshRepositories,
+  refreshGitHubAuth,
+  reauthenticateWithRepoSelection,
   onInputChange, 
   onDetailLevelChange,
   onExtractTasks 
@@ -106,6 +110,8 @@ export function TaskInput({
               handleProjectSelect={handleProjectSelect}
               isLoading={isLoading}
               refreshRepositories={refreshRepositories}
+              refreshGitHubAuth={refreshGitHubAuth}
+              reauthenticateWithRepoSelection={reauthenticateWithRepoSelection}
             />
           )}
           

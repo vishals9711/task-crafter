@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { Check, ChevronsUpDown, FolderGit2, GitBranch, RefreshCw } from 'lucide-react';
+import { Check, ChevronsUpDown, FolderGit2, GitBranch, RefreshCw, Layers } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import {
   Command,
@@ -18,6 +18,8 @@ import { GitHubProject } from '@/types/task';
 import { motion } from 'framer-motion';
 import { Organization, Repository } from '../hooks/useRepositories';
 import { OrganizationSelector } from './OrganizationSelector';
+import { useState } from 'react';
+import { ReauthInfoDialog } from '@/components/ReauthInfoDialog';
 
 interface RepositorySelectorProps {
   isGitHubLoggedIn: boolean;
@@ -39,6 +41,8 @@ interface RepositorySelectorProps {
   handleProjectSelect: (projectId: string) => void;
   isLoading: boolean;
   refreshRepositories: () => void;
+  refreshGitHubAuth: () => void;
+  reauthenticateWithRepoSelection?: () => void;
 }
 
 export function RepositorySelector({
@@ -60,8 +64,11 @@ export function RepositorySelector({
   setProjectSelectorOpen,
   handleProjectSelect,
   isLoading,
-  refreshRepositories
+  refreshRepositories,
+  reauthenticateWithRepoSelection
 }: RepositorySelectorProps) {
+  const [showReauthDialog, setShowReauthDialog] = useState(false);
+  
   if (!isGitHubLoggedIn) {
     return null;
   }
@@ -95,16 +102,59 @@ export function RepositorySelector({
       {/* Decorative elements */}
       <div className="absolute right-0 bottom-0 top-1/2 w-32 h-32 bg-green-500/10 blur-[100px] -z-10" />
       
+      {/* ReauthInfoDialog */}
+      {reauthenticateWithRepoSelection && (
+        <ReauthInfoDialog 
+          open={showReauthDialog} 
+          onOpenChange={setShowReauthDialog}
+          onContinue={reauthenticateWithRepoSelection}
+        />
+      )}
+      
       <motion.div 
         variants={itemVariants}
-        className="mb-4 flex items-center"
+        className="mb-4 flex items-center justify-between"
       >
-        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-950/50 border border-green-400/30 mr-3">
-          <FolderGit2 className="h-4 w-4 text-green-400" />
+        <div className="flex items-center">
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-950/50 border border-green-400/30 mr-3">
+            <FolderGit2 className="h-4 w-4 text-green-400" />
+          </div>
+          <span className="text-base font-medium text-white/90">
+            GitHub Repository Settings
+          </span>
         </div>
-        <span className="text-base font-medium text-white/90">
-          GitHub Repository Settings
-        </span>
+        
+        <div className="flex gap-2">
+          {reauthenticateWithRepoSelection && (
+            <motion.div 
+              variants={itemVariants}
+              className="relative group mr-4 mt-8"
+            >
+              <Button
+                variant="outline" 
+                size="sm"
+                onClick={() => setShowReauthDialog(true)}
+                disabled={isLoading}
+                className="h-9 px-3 bg-blue-950/30 border-blue-500/30 hover:bg-blue-900/30 hover:border-blue-400/40 text-white/90 flex items-center gap-2 relative group"
+              >
+                <Layers className="h-3.5 w-3.5 text-blue-400" />
+                <span className="text-sm">Select Repositories</span>
+                
+                {/* Gradient border effect on hover */}
+                <span className="absolute inset-x-0 -bottom-px h-px w-full bg-gradient-to-r from-transparent via-blue-500/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+              </Button>
+              
+              {/* Custom tooltip */}
+              <div className="absolute -top-10 left-1/2 -translate-x-1/2 px-3 py-2 bg-black/90 border border-blue-500/30 
+                          rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible 
+                          transition-all duration-200 text-xs text-white/90 whitespace-nowrap z-50">
+                Update repository access permissions
+                {/* Tooltip arrow */}
+                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 w-2 h-2 rotate-45 bg-black/90 border-r border-b border-blue-500/30"></div>
+              </div>
+            </motion.div>
+          )}
+        </div>
       </motion.div>
       
       {/* Organization selector row */}

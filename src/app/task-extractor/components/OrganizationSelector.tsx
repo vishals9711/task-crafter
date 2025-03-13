@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/popover";
 import { motion } from 'framer-motion';
 import { Organization } from '../hooks/useRepositories';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import Image from 'next/image';
 
 interface OrganizationSelectorProps {
   organizations: Organization[];
@@ -124,7 +124,7 @@ export function OrganizationSelector({
                           <span className="flex items-center">
                             <div className="w-5 h-5 rounded-sm mr-2 overflow-hidden bg-white/10 flex items-center justify-center">
                               {org.avatarUrl ? (
-                                <img 
+                                <Image 
                                   src={org.avatarUrl} 
                                   alt={org.login}
                                   className="w-full h-full object-cover"
@@ -152,27 +152,29 @@ export function OrganizationSelector({
         </PopoverContent>
       </Popover>
 
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="outline" 
-              size="icon"
-              onClick={refreshRepositories}
-              disabled={isLoading}
-              className="h-10 w-10 bg-white/5 border-white/10 hover:bg-white/10"
-            >
-              <RotateCcw className={cn(
-                "h-4 w-4 text-white/70",
-                isLoading && "animate-spin"
-              )} />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Refresh repositories</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
+      <div className="relative group">
+        <Button
+          variant="outline" 
+          size="icon"
+          onClick={refreshRepositories}
+          disabled={isLoading}
+          className="h-10 w-10 bg-white/5 border-white/10 hover:bg-white/10"
+        >
+          <RotateCcw className={cn(
+            "h-4 w-4 text-white/70",
+            isLoading && "animate-spin"
+          )} />
+        </Button>
+        
+        {/* Custom tooltip */}
+        <div className="absolute -top-10 left-1/2 -translate-x-1/2 px-3 py-2 bg-black/90 border border-white/20
+                      rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible 
+                      transition-all duration-200 text-xs text-white/90 whitespace-nowrap z-50">
+          Refresh repositories
+          {/* Tooltip arrow */}
+          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 w-2 h-2 rotate-45 bg-black/90 border-r border-b border-white/20"></div>
+        </div>
+      </div>
     </motion.div>
   );
 } 

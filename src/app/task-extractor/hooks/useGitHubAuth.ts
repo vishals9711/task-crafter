@@ -26,10 +26,26 @@ export const useGitHubAuth = () => {
         signIn('github', { callbackUrl: '/task-extractor' });
     }, []);
 
+    const refreshGitHubAuth = useCallback(() => {
+        toast.info('Refreshing GitHub authorization...');
+        signIn('github', { callbackUrl: '/task-extractor' });
+    }, []);
+
+    /**
+     * Redirects to custom GitHub OAuth flow that emphasizes repository selection
+     * This allows users to update which repositories they want to grant access to
+     */
+    const reauthenticateWithRepoSelection = useCallback(() => {
+        toast.info('Redirecting to GitHub for repository selection...');
+        window.location.href = '/api/github/reauthenticate';
+    }, []);
+
     return {
         isGitHubLoggedIn,
         handleGitHubLogin,
         handleGitHubLogout,
+        refreshGitHubAuth,
+        reauthenticateWithRepoSelection,
         session: session as ExtendedSession,
         isLoading: status === 'loading',
         accessToken
