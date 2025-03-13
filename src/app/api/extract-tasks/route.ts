@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { v4 as uuidv4 } from 'uuid';
-import { ExtractedTasks, Task } from '@/types/task';
+import { DetailLevel, ExtractedTasks, Task, TaskExtractionRequest } from '@/types/task';
 import { generateObject } from 'ai';
 import { openai } from '@ai-sdk/openai';
 import { z } from 'zod';
@@ -23,39 +23,73 @@ const taskResponseSchema = z.object({
     ),
 });
 
-const taskExtractionPrompt = `
+// Task extraction prompts for different detail levels
+const taskExtractionPrompts = {
+    [DetailLevel.LOW]: `
 You are a task extraction assistant. Your goal is to break down a high-level task into a small set of clear, actionable steps.
 
-Instructions:
+Instructions (LOW DETAIL level):
 1. Identify the core task from the input.
-2. Extract **only the essential** steps required to complete the task.
-3. Limit the output to **3-5 key subtasks**.
-4. Keep descriptions **brief** (1-2 sentences per subtask) and **action-oriented**.
+2. Extract only the ESSENTIAL steps required to complete the task.
+3. Limit the output to 2-3 key subtasks.
+4. Keep descriptions extremely brief (1 sentence per subtask) and action-oriented.
+5. Focus only on the big picture steps, avoiding any implementation details.
+
+Focus on:
+- Highest-level actions only
+- Extremely concise wording
+- Only the most critical steps
+`,
+
+    [DetailLevel.MEDIUM]: `
+You are a task extraction assistant. Your goal is to break down a high-level task into a balanced set of clear, actionable steps.
+
+Instructions (MEDIUM DETAIL level):
+1. Identify the core task from the input.
+2. Extract the important steps required to complete the task.
+3. Provide 3-5 key subtasks.
+4. Keep descriptions brief (1-2 sentences per subtask) and action-oriented.
 5. Order subtasks logically, highlighting dependencies if any.
 
 Focus on:
-- Actionable outcomes, not technical implementation.
-- Avoid overly granular or repetitive steps.
-- Cover the entire task without unnecessary detail.
-`;
+- Actionable outcomes, not technical implementation
+- Avoid overly granular or repetitive steps
+- Cover the entire task without unnecessary detail
+`,
 
-async function processWithLLM(text: string): Promise<ExtractedTasks> {
+    [DetailLevel.HIGH]: `
+You are a task extraction assistant. Your goal is to break down a high-level task into a comprehensive set of detailed, actionable steps.
+
+Instructions (HIGH DETAIL level):
+1. Identify the core task from the input and provide a thorough breakdown.
+2. Extract ALL steps required to complete the task, including intermediate steps.
+3. Provide 5-8 subtasks with detailed descriptions.
+4. Include implementation guidance and considerations for each subtask.
+5. Order subtasks logically, with clear dependencies and sequence.
+
+Focus on:
+- Comprehensive coverage of all aspects of the task
+- Detailed explanations and implementation suggestions
+- Technical considerations and best practices
+- Potential challenges and how to address them
+`
+};
+
+async function processWithLLM(text: string, detailLevel: DetailLevel): Promise<ExtractedTasks> {
     try {
-
         const result = await generateObject({
             model: openai('gpt-4o-mini'),
             schema: taskResponseSchema,
             schemaName: 'TaskExtraction',
             schemaDescription: 'Extract a main task and subtasks from the input text',
-            system: taskExtractionPrompt,
+            system: taskExtractionPrompts[detailLevel],
             prompt: text,
             temperature: 0,
-            maxTokens: 500, // Reduced token limit for faster responses
+            maxTokens: detailLevel === DetailLevel.HIGH ? 800 : 500, // Increase token limit for high detail
             mode: 'json', // Explicitly use JSON mode for faster processing
         });
 
         const parsedContent = result.object;
-
 
         const subtasks = parsedContent.subtasks.map((subtask) => {
             if (!subtask.title || !subtask.description) {
@@ -114,7 +148,7 @@ async function processWithLLM(text: string): Promise<ExtractedTasks> {
 
 export async function POST(request: NextRequest) {
     try {
-        const { text } = await request.json();
+        const { text, detailLevel = DetailLevel.MEDIUM } = await request.json() as TaskExtractionRequest;
 
         if (!text || typeof text !== 'string') {
             return NextResponse.json(
@@ -123,7 +157,7 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        const result = await processWithLLM(text);
+        const result = await processWithLLM(text, detailLevel);
 
         return NextResponse.json(result);
     } catch (error) {

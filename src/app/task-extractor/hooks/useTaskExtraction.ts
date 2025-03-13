@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { ExtractedTasks, GitHubIssueCreationResult } from '@/types/task';
+import { DetailLevel, ExtractedTasks, GitHubIssueCreationResult } from '@/types/task';
 
 export const useTaskExtraction = () => {
     const [inputText, setInputText] = useState('');
@@ -8,10 +8,17 @@ export const useTaskExtraction = () => {
     const [isProcessing, setIsProcessing] = useState(false);
     const [markdownText, setMarkdownText] = useState('');
     const [creationResult, setCreationResult] = useState<GitHubIssueCreationResult | null>(null);
+    const [detailLevel, setDetailLevel] = useState<DetailLevel>(DetailLevel.MEDIUM);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setInputText(e.target.value);
         // Reset creation result when input changes
+        setCreationResult(null);
+    };
+
+    const handleDetailLevelChange = (level: DetailLevel) => {
+        setDetailLevel(level);
+        // Reset creation result when detail level changes
         setCreationResult(null);
     };
 
@@ -62,13 +69,15 @@ export const useTaskExtraction = () => {
         setCreationResult(null);
 
         try {
-
             const response = await fetch('/api/extract-tasks', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ text: inputText }),
+                body: JSON.stringify({
+                    text: inputText,
+                    detailLevel: detailLevel
+                }),
             });
 
             if (!response.ok) {
@@ -108,8 +117,10 @@ export const useTaskExtraction = () => {
         isProcessing,
         markdownText,
         creationResult,
+        detailLevel,
         setCreationResult,
         handleInputChange,
+        handleDetailLevelChange,
         handleExtractTasks,
         handleSubtaskToggle,
         copyMarkdownToClipboard,

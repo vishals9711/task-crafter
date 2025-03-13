@@ -36,6 +36,8 @@ export default function TaskExtractor() {
     handleExtractTasks,
     handleSubtaskToggle,
     copyMarkdownToClipboard,
+    detailLevel,
+    handleDetailLevelChange,
   } = useTaskExtraction();
   const {
     isCreatingIssues,
@@ -113,7 +115,9 @@ export default function TaskExtractor() {
           <TaskInput
             inputText={inputText}
             isProcessing={isProcessing}
+            detailLevel={detailLevel}
             onInputChange={handleInputChange}
+            onDetailLevelChange={handleDetailLevelChange}
             onExtractTasks={handleExtractTasks}
           />
 

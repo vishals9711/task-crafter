@@ -75,8 +75,8 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       {
-        url: "/favicon.ico",
-        sizes: "32x32",
+        url: "/favicon.svg",
+        type: "image/svg+xml",
       },
     ],
   },
@@ -96,11 +96,11 @@ export default function RootLayout({
             <div className="container mx-auto py-3 px-4 flex items-center justify-between">
               <Link 
                 href="/" 
-                className="flex items-center gap-2 text-xl font-bold"
+                className="flex items-center gap-3 text-xl font-bold transition-opacity hover:opacity-90"
                 prefetch={true}
               >
-                <Logo className="w-6 h-6" />
-                <span className="inline-block">Task Crafter</span>
+                <Logo className="w-10 h-10 rounded-full overflow-hidden" />
+                <span className="inline-block bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">Task Crafter</span>
               </Link>
               <ClientNavigationWrapper />
             </div>

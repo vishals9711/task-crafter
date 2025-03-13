@@ -1,3 +1,9 @@
+export enum DetailLevel {
+    LOW = "low",
+    MEDIUM = "medium",
+    HIGH = "high"
+}
+
 export interface SubTask {
     id: string;
     title: string;
@@ -16,6 +22,11 @@ export interface ExtractedTasks {
     mainTask: Task;
     success: boolean;
     error?: string;
+}
+
+export interface TaskExtractionRequest {
+    text: string;
+    detailLevel: DetailLevel;
 }
 
 export interface GitHubIssueCreationResult {

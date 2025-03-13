@@ -2,15 +2,26 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
+import { DetailLevel } from '@/types/task';
+import { DetailLevelSelector } from './DetailLevelSelector';
 
 interface TaskInputProps {
   inputText: string;
   isProcessing: boolean;
+  detailLevel: DetailLevel;
   onInputChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  onDetailLevelChange: (level: DetailLevel) => void;
   onExtractTasks: () => void;
 }
 
-export function TaskInput({ inputText, isProcessing, onInputChange, onExtractTasks }: TaskInputProps) {
+export function TaskInput({ 
+  inputText, 
+  isProcessing, 
+  detailLevel,
+  onInputChange, 
+  onDetailLevelChange,
+  onExtractTasks 
+}: TaskInputProps) {
   return (
     <motion.div
       initial={{ opacity: 0, x: -20 }}
@@ -24,12 +35,18 @@ export function TaskInput({ inputText, isProcessing, onInputChange, onExtractTas
             Enter your free-form text here. Be as detailed as possible.
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-4">
           <Textarea
             placeholder="e.g. Create a new user authentication system with login, registration, and password reset functionality..."
             className="min-h-[300px] bg-black/20 border-white/10 focus:border-white/20 placeholder:text-white/30"
             value={inputText}
             onChange={onInputChange}
+          />
+          
+          <DetailLevelSelector 
+            value={detailLevel}
+            onChange={onDetailLevelChange}
+            className="pt-4"
           />
         </CardContent>
         <CardFooter>
