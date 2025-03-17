@@ -35,6 +35,11 @@ export const viewport = {
     { media: "(prefers-color-scheme: light)", color: "white" },
     { media: "(prefers-color-scheme: dark)", color: "black" }
   ],
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
+  viewportFit: 'cover',
 };
 
 export const metadata: Metadata = {
@@ -92,19 +97,19 @@ export default function RootLayout({
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
       <body className="antialiased">
         <Providers>
-          <header className="sticky top-0 z-50 border-b border-white/10 backdrop-blur-sm bg-white/5 dark:bg-black/5">
+          <nav className="border-b border-white/10 bg-background">
             <div className="container mx-auto py-3 px-4 flex items-center justify-between">
               <Link 
                 href="/" 
-                className="flex items-center gap-3 text-xl font-bold transition-opacity hover:opacity-90"
+                className="flex items-center gap-3 text-xl font-bold"
                 prefetch={true}
               >
                 <Logo className="w-10 h-10 rounded-full overflow-hidden" />
-                <span className="inline-block bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">Task Crafter</span>
+                <span className="text-brand">Task Crafter</span>
               </Link>
               <ClientNavigationWrapper />
             </div>
-          </header>
+          </nav>
           <main>
             {children}
             <SpeedInsights />

@@ -125,9 +125,30 @@
   * {
     @apply border-border;
   }
+  
+  html {
+    text-size-adjust: 100%;
+    -webkit-text-size-adjust: 100%;
+  }
+  
   body {
     @apply bg-background text-foreground;
     background: hsl(var(--background));
     color: hsl(var(--foreground));
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  /* Brand colors */
+  .text-brand {
+    color: #3b82f6;
+  }
+  
+  /* Static elements */
+  .sticky, .fixed {
+    position: fixed;
+    top: 0;
+    width: 100%;
   }
 }

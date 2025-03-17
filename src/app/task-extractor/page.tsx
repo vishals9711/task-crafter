@@ -104,16 +104,16 @@ export default function TaskExtractor() {
   return (
     <>
       <ParticleBackground />
-      <div className="max-w-4xl mx-auto py-6 px-4 relative flex flex-col min-h-screen">
+      <div className="max-w-4xl mx-auto py-4 sm:py-6 px-3 sm:px-4 relative flex flex-col min-h-[calc(100vh-4rem)]">
         <Toaster position="top-right" />
         
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="mb-6"
+          className="mb-4 sm:mb-6"
         >
-          <p className="text-center mb-4 text-white/70 text-lg">
+          <p className="text-center mb-4 text-white/70 text-base sm:text-lg px-2 sm:px-0">
             Enter a description of your work, and Task Crafter will extract a structured task with subtasks.
           </p>
         </motion.div>
@@ -127,7 +127,7 @@ export default function TaskExtractor() {
           />
         )}
         
-        <div ref={inputRef}>
+        <div ref={inputRef} className="w-full">
           <TaskInput
             inputText={inputText}
             isProcessing={isProcessing}
@@ -161,7 +161,7 @@ export default function TaskExtractor() {
         </div>
 
         {extractedTasks && (
-          <div ref={outputRef}>
+          <div ref={outputRef} className="w-full mt-6 sm:mt-8">
             <TaskOutput
               isProcessing={isProcessing}
               extractedTasks={extractedTasks}
@@ -182,15 +182,15 @@ export default function TaskExtractor() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
-            className="fixed bottom-6 right-6"
+            className="fixed bottom-4 sm:bottom-6 right-4 sm:right-6"
           >
             <Button
               variant="secondary"
               size="icon"
-              className="rounded-full shadow-lg w-12 h-12 bg-gradient-to-r from-blue-600/80 to-indigo-600/80 backdrop-blur-sm border border-white/10 hover:from-blue-600 hover:to-indigo-600"
+              className="rounded-full shadow-lg w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-blue-600/80 to-indigo-600/80 backdrop-blur-sm border border-white/10 hover:from-blue-600 hover:to-indigo-600"
               onClick={scrollToTop}
             >
-              <ArrowUp className="h-5 w-5" />
+              <ArrowUp className="h-4 w-4 sm:h-5 sm:w-5" />
             </Button>
           </motion.div>
         )}

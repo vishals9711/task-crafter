@@ -39,6 +39,17 @@ export default function Home() {
 
       <footer className="text-center text-sm text-slate-400 py-4">
         <p>Built with Next.js 15, TypeScript, and TailwindCSS</p>
+        <p className="mt-1">
+          by{" "}
+          <a 
+            href="https://www.vishalrsharma.dev" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="text-blue-400 hover:text-blue-300 transition-colors"
+          >
+            Vishal Sharma
+          </a>
+        </p>
       </footer>
     </div>
   );
